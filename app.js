@@ -259,8 +259,35 @@
     verdictMarker.style.left = verdict.barPosition + '%';
     markerPriceLabel.textContent = formatPrice(product.current);
     
+    // Prevent marker label from overflowing edges horizontally
+    if (verdict.barPosition < 15) {
+      markerPriceLabel.style.transform = 'translateX(0)'; // align left edge
+    } else if (verdict.barPosition > 85) {
+      markerPriceLabel.style.transform = 'translateX(-100%)'; // align right edge
+    } else {
+      markerPriceLabel.style.transform = 'translateX(-50%)'; // center align
+    }
+    
     if (averageLabel) {
       averageLabel.style.left = verdict.avgPosition + '%';
+      
+      // Prevent average label from overlapping High/Low text
+      const labelHigh = document.getElementById('label-high');
+      const labelLow = document.getElementById('label-low');
+      
+      if (verdict.avgPosition < 15) {
+        averageLabel.style.transform = 'translateX(0)';
+        if (labelHigh) labelHigh.style.opacity = '0';
+        if (labelLow) labelLow.style.opacity = '1';
+      } else if (verdict.avgPosition > 85) {
+        averageLabel.style.transform = 'translateX(-100%)';
+        if (labelHigh) labelHigh.style.opacity = '1';
+        if (labelLow) labelLow.style.opacity = '0';
+      } else {
+        averageLabel.style.transform = 'translateX(-50%)';
+        if (labelHigh) labelHigh.style.opacity = '1';
+        if (labelLow) labelLow.style.opacity = '1';
+      }
     }
 
     // Verdict badge
