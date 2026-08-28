@@ -141,6 +141,7 @@
   var detailLowest = document.getElementById('detail-lowest');
   var detailAverage = document.getElementById('detail-average');
   var detailHighest = document.getElementById('detail-highest');
+  var averageLabel = document.getElementById('average-label');
 
   // ================================================================
   // HELPERS
@@ -208,13 +209,19 @@
       }
     }
 
-    // Bar marker position: map % difference to position on the bar
-    // Center (50%) = average price (0% difference)
-    // -15% maps to ~30% on bar, +15% maps to ~70%
-    // Scale factor: 20/15 ≈ 1.33 per percent
-    var barPosition = 50 + (pctDiff * (20 / 15));
-    // Clamp between 4% and 96% so marker stays visible on bar
+    // Bar and average tick positions based on real range
+    var range = product.highest - product.lowest;
+    var barPosition = 50; // default
+    var avgPosition = 50;
+    
+    if (range > 0) {
+      barPosition = ((product.current - product.lowest) / range) * 100;
+      avgPosition = ((product.average - product.lowest) / range) * 100;
+    }
+
+    // Clamp between 4% and 96% so markers stay visible on bar edges
     barPosition = Math.max(4, Math.min(96, barPosition));
+    avgPosition = Math.max(4, Math.min(96, avgPosition));
 
     return {
       pctDiff: pctDiff,
@@ -222,7 +229,8 @@
       label: label,
       badgeClass: badgeClass,
       text: text,
-      barPosition: barPosition
+      barPosition: barPosition,
+      avgPosition: avgPosition
     };
   }
 
@@ -243,9 +251,13 @@
     detailName.textContent = product.name;
     detailPrice.textContent = formatPrice(product.current);
 
-    // Verdict bar marker position
+    // Verdict bar and average marker positions
     verdictMarker.style.left = verdict.barPosition + '%';
     markerPriceLabel.textContent = formatPrice(product.current);
+    
+    if (averageLabel) {
+      averageLabel.style.left = verdict.avgPosition + '%';
+    }
 
     // Verdict badge
     verdictBadge.className = 'verdict-badge ' + verdict.badgeClass;
