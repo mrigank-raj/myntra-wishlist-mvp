@@ -192,16 +192,6 @@
       badgeClass = 'verdict-green';
       var savings = product.average - product.current;
       text = "You'd save " + formatPrice(savings) + ' compared to what this usually sells for.';
-      // Second line only if current is within 15% of the lowest-to-highest range
-      var range = product.highest - product.lowest;
-      if (range > 0 && ((product.current - product.lowest) / range) <= 0.15) {
-        var gapToLowest = product.current - product.lowest;
-        if (gapToLowest <= 0) {
-          text += '\nThis is the lowest price we\'ve recorded for this item.';
-        } else {
-          text += '\nJust ' + formatPrice(gapToLowest) + ' away from its lowest recorded price.';
-        }
-      }
     } else if (pctDiff > 15) {
       zone = 'red';
       label = 'Wait For Drop';
