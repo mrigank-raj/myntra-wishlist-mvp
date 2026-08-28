@@ -17,7 +17,7 @@
       lowest: 1295,
       average: 2029,
       highest: 4799,
-      icon: '🧥',
+      image: 'assets/product_0.png',
       imgBg: '#EDE8E3'
     },
     {
@@ -27,7 +27,7 @@
       lowest: 1029,
       average: 1978,
       highest: 2299,
-      icon: '👕',
+      image: 'assets/product_1.png',
       imgBg: '#E3EBF0'
     },
     {
@@ -37,7 +37,7 @@
       lowest: 2600,
       average: 5062,
       highest: 5199,
-      icon: '👖',
+      image: 'assets/product_2.png',
       imgBg: '#E8E6DF'
     },
     {
@@ -47,7 +47,7 @@
       lowest: 289,
       average: 371,
       highest: 499,
-      icon: '🧴',
+      image: 'assets/product_3.png',
       imgBg: '#E0EFEA'
     },
     {
@@ -57,7 +57,7 @@
       lowest: 3200,
       average: 7424,
       highest: 7504,
-      icon: '💄',
+      image: 'assets/product_4.png',
       imgBg: '#F5E0E8'
     },
     {
@@ -67,7 +67,7 @@
       lowest: 1289,
       average: 1622,
       highest: 3799,
-      icon: '🧥',
+      image: 'assets/product_5.png',
       imgBg: '#E2E2EC'
     },
     {
@@ -77,7 +77,7 @@
       lowest: 5478,
       average: 7304,
       highest: 13695,
-      icon: '🧥',
+      image: 'assets/product_6.png',
       imgBg: '#DDE5ED'
     },
     {
@@ -87,7 +87,7 @@
       lowest: 16999,
       average: 20781,
       highest: 26999,
-      icon: '🎧',
+      image: 'assets/product_7.png',
       imgBg: '#E5E5E5'
     },
     {
@@ -97,7 +97,7 @@
       lowest: 798,
       average: 1700,
       highest: 1995,
-      icon: '🧴',
+      image: 'assets/product_8.png',
       imgBg: '#EDE6F0'
     },
     {
@@ -107,7 +107,7 @@
       lowest: 923,
       average: 1299,
       highest: 1649,
-      icon: '👔',
+      image: 'assets/product_9.png',
       imgBg: '#F0EBE3'
     }
   ];
@@ -249,7 +249,7 @@
 
     // Image
     detailImage.style.setProperty('--img-bg', product.imgBg);
-    detailImageIcon.textContent = product.icon;
+    detailImageIcon.innerHTML = '<img class="product-real-image" src="' + product.image + '" alt="' + product.name + '">';
 
     // Info — only name and current price (from PRODUCT_DATA)
     detailName.textContent = product.name;
@@ -324,8 +324,8 @@
       card.setAttribute('data-product-id', product.id);
 
       card.innerHTML =
-        '<div class="product-card-image" style="--img-bg: ' + product.imgBg + '">' +
-          '<span class="product-card-image-icon">' + product.icon + '</span>' +
+        '<div class="product-card-image" style="--img-bg: ' + product.imgBg + ';">' +
+          '<img class="product-real-image" src="' + product.image + '" alt="' + product.name + '">' +
           '<div class="card-heart">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF3F6C" stroke="#FF3F6C" stroke-width="2">' +
               '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +

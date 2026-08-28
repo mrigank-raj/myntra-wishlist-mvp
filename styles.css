@@ -610,11 +610,11 @@ body {
   overflow: hidden;
 }
 
-.product-card-image-icon {
-  font-size: 3rem;
-  opacity: 0.45;
-  user-select: none;
-  filter: grayscale(0.15);
+.product-real-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
 }
 
 /* Wishlist heart on card */
@@ -692,9 +692,9 @@ body {
 }
 
 .detail-image-icon {
-  font-size: 5rem;
-  opacity: 0.5;
-  user-select: none;
+  width: 100%;
+  height: 100%;
+  display: flex;
 }
 
 /* ---- Product Info ---- */
