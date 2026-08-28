@@ -945,35 +945,37 @@ body {
    ============================================================ */
 .home-click-hint {
   position: absolute;
-  top: 55px;
-  right: 65px;
+  top: 15px;
+  right: 57px;
+  width: 300px;
+  height: 400px;
   pointer-events: none;
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(8px);
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
+  transform: translateY(10px);
 }
 .home-click-hint.active { 
   opacity: 1; 
   transform: translateY(0);
 }
+.hint-arrow {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 .hint-text {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #333;
   background: #fff;
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   white-space: nowrap;
-  margin-top: 10px;
-}
-.hint-arrow {
-  margin-top: -5px;
 }
 
