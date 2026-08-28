@@ -272,9 +272,16 @@
       averageLabel.style.left = verdict.avgPosition + '%';
       
       // Prevent average label from overlapping High/Low text
-      const labelHigh = document.getElementById('label-high');
-      const labelLow = document.getElementById('label-low');
+      // Use querySelector to ensure it works even if index.html is cached and missing IDs
+      const labelHigh = document.getElementById('label-high') || document.querySelector('.verdict-bar-labels span:first-child');
+      const labelLow = document.getElementById('label-low') || document.querySelector('.verdict-bar-labels span:last-child');
       
+      // Force extra margin on the container to prevent vertical overlap with title even if CSS is cached
+      const barContainer = document.querySelector('.verdict-bar-container');
+      if (barContainer) {
+        barContainer.style.marginTop = '12px';
+      }
+
       if (verdict.avgPosition < 15) {
         averageLabel.style.transform = 'translateX(0)';
         if (labelHigh) labelHigh.style.opacity = '0';
