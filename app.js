@@ -215,8 +215,9 @@
     var avgPosition = 50;
     
     if (range > 0) {
-      barPosition = ((product.current - product.lowest) / range) * 100;
-      avgPosition = ((product.average - product.lowest) / range) * 100;
+      // Inverted logic: Left = High, Right = Low
+      barPosition = 100 - (((product.current - product.lowest) / range) * 100);
+      avgPosition = 100 - (((product.average - product.lowest) / range) * 100);
     }
 
     // Clamp between 4% and 96% so markers stay visible on bar edges

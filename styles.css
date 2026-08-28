@@ -670,13 +670,13 @@ body {
   border-radius: 5px;
   background: linear-gradient(
     to right,
-    #34C759 0%,
-    #34C759 25%,
-    #A8D94A 35%,
+    #FF3B30 0%,
+    #FF6B6B 20%,
+    #FFAA33 35%,
     #FFD60A 50%,
-    #FFAA33 65%,
-    #FF6B6B 80%,
-    #FF3B30 100%
+    #A8D94A 65%,
+    #34C759 75%,
+    #34C759 100%
   );
   position: relative;
   margin: 0 8px;
