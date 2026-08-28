@@ -190,23 +190,26 @@
       zone = 'green';
       label = 'Good time to buy';
       badgeClass = 'verdict-green';
-      text = 'This is currently ' + roundedPct + '% below its typical average price of ' + formatPrice(product.average) + '.';
+      var savings = product.average - product.current;
+      text = "You'd save " + formatPrice(savings) + ' compared to what this usually sells for.';
+      // Second line only if current is within 15% of the lowest-to-highest range
+      var range = product.highest - product.lowest;
+      if (range > 0 && ((product.current - product.lowest) / range) <= 0.15) {
+        var gapToLowest = product.current - product.lowest;
+        text += '\nJust ' + formatPrice(gapToLowest) + ' away from its lowest recorded price.';
+      }
     } else if (pctDiff > 15) {
       zone = 'red';
       label = 'Consider waiting';
       badgeClass = 'verdict-red';
-      text = 'This is currently ' + roundedPct + '% above its typical average price of ' + formatPrice(product.average) + '.';
+      var overpay = product.current - product.average;
+      text = "You'd pay " + formatPrice(overpay) + ' more than its typical price of ' + formatPrice(product.average) + '.';
+      text += "\nWaiting could bring it back down, but that isn't guaranteed.";
     } else {
       zone = 'yellow';
       label = 'Okay, fair price';
       badgeClass = 'verdict-yellow';
-      if (pctDiff < 0) {
-        text = 'This is currently ' + roundedPct + '% below its typical average price of ' + formatPrice(product.average) + '.';
-      } else if (pctDiff > 0) {
-        text = 'This is currently ' + roundedPct + '% above its typical average price of ' + formatPrice(product.average) + '.';
-      } else {
-        text = 'This is currently at its typical average price of ' + formatPrice(product.average) + '.';
-      }
+      text = 'This is close to what it typically sells for (avg ' + formatPrice(product.average) + ').';
     }
 
     // Bar and average tick positions based on real range
