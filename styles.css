@@ -192,40 +192,46 @@ body {
     opacity: 0.7;
   }
   80%, 100% {
-    transform: translate(-50%, -50%) scale(1.8);
+    transform: translate(-50%, -50%) scale(1.4);
     opacity: 0;
   }
 }
 
-/* Bouncing arrow + label */
-.nudge-arrow {
+/* ============================================================
+   WISHLIST PRODUCT TOUR POINTER
+   ============================================================ */
+.tour-pointer {
   position: absolute;
-  top: -58px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 100%;
+  right: -10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  z-index: 4;
+  align-items: flex-end;
   pointer-events: none;
-  animation: bounceArrow 1.2s ease-in-out infinite;
+  z-index: 100;
+  animation: floatPointer 2s ease-in-out infinite;
 }
 
-.nudge-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--myntra-white);
-  background: var(--myntra-pink);
-  padding: 3px 10px;
-  border-radius: 20px;
+.tour-arrow {
+  margin-right: 20px;
+  margin-bottom: 4px;
+}
+
+.tour-tooltip {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #282C3F;
+  background: #ffffff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0,0,0,0.08);
   white-space: nowrap;
-  margin-bottom: 2px;
-  box-shadow: 0 2px 8px rgba(255, 63, 108, 0.35);
 }
 
-@keyframes bounceArrow {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(6px); }
+@keyframes floatPointer {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
 }
 
 /* ============================================================
@@ -940,44 +946,5 @@ body {
   }
 }
 
-/* ============================================================
-   Home Click Hint Overlay
-   ============================================================ */
-.home-click-hint {
-  position: absolute;
-  top: 27px;
-  right: 74px;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(10px);
-}
-.home-click-hint.active { 
-  opacity: 1; 
-  transform: translateY(0);
-}
-.hint-arrow {
-  position: absolute;
-  top: 15px;
-  left: -25px;
-  width: 50px;
-  height: 70px;
-}
-.hint-text {
-  position: absolute;
-  top: 85px;
-  left: -75px;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #333;
-  background: #fff;
-  padding: 10px 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  white-space: nowrap;
-}
+/* END OF CSS */
 
