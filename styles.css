@@ -686,34 +686,36 @@ body {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: 10;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
   transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .marker-dot {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--myntra-white);
-  border: 3px solid var(--myntra-dark);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.18);
-  position: relative;
-  z-index: 2;
+  background: var(--myntra-dark);
+  border: 2.5px solid var(--myntra-white);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
 }
 
 .marker-price-label {
-  margin-top: 6px;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.68rem;
   font-weight: 700;
   color: var(--myntra-dark);
   background: var(--myntra-white);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   border: 1px solid var(--myntra-border);
   white-space: nowrap;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
 .verdict-bar-labels {
