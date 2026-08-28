@@ -197,7 +197,7 @@
       label = 'Wait For Drop';
       badgeClass = 'verdict-red';
       var overpay = product.current - product.average;
-      text = "You'd pay " + formatPrice(overpay) + ' more than its typical price of ' + formatPrice(product.average) + '.';
+      text = "You'd pay " + formatPrice(overpay) + ' more than its typical price.';
       text += "\nWaiting could bring it back down, but that isn't guaranteed.";
     } else {
       zone = 'yellow';
@@ -205,11 +205,11 @@
       if (pctDiff < 0) {
         // Genuinely, if modestly, below average — a real fact worth stating plainly
         label = 'Fair Deal';
-        text = 'Slightly below what this typically sells for (avg ' + formatPrice(product.average) + ') — a fair price if you\'re ready to buy.';
+        text = 'Slightly below what this typically sells for — a fair price if you\'re ready to buy.';
       } else {
         // At or above average — no real reason to act now, say so plainly
         label = 'Solid Pick';
-        text = 'Right around what this typically sells for (avg ' + formatPrice(product.average) + ').';
+        text = 'Right around what this typically sells for.';
       }
     }
 
