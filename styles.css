@@ -939,3 +939,35 @@ body {
     transform: translateX(0);
   }
 }
+
+/* ============================================================
+   Home Click Hint Overlay
+   ============================================================ */
+.home-click-hint {
+  position: absolute;
+  top: 60px;
+  right: 15px;
+  width: 250px;
+  height: 400px;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.home-click-hint.active { opacity: 1; }
+.hint-arrow { position: absolute; top: 30px; right: 10px; }
+.hint-text {
+  position: absolute;
+  bottom: 0px;
+  left: -20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #000;
+  transform: rotate(-10deg);
+  white-space: nowrap;
+}
+

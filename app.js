@@ -355,9 +355,28 @@
   // NAVIGATION
   // ================================================================
 
+  // Home Screen Hint Logic
+  var homeClickHint = document.getElementById('home-click-hint');
+  var hintTimeout;
+  
+  screenHome.addEventListener('click', function(e) {
+    // If the click is NOT inside the wishlist button wrapper
+    if (!e.target.closest('#wishlist-nudge-wrapper')) {
+      // Show hint
+      if (homeClickHint) {
+        homeClickHint.classList.add('active');
+        clearTimeout(hintTimeout);
+        hintTimeout = setTimeout(function() {
+          homeClickHint.classList.remove('active');
+        }, 2500); // Hide after 2.5s
+      }
+    }
+  });
+
   // Home → Wishlist
   btnWishlist.addEventListener('click', function () {
     switchScreen(screenHome, screenWishlist, false);
+    if (homeClickHint) homeClickHint.classList.remove('active');
   });
 
   // Wishlist → Home
