@@ -669,6 +669,31 @@ body {
   color: var(--myntra-dark);
 }
 
+/* Action icon row: remove / add to bag / share */
+.product-card-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 6px;
+  border-top: 1px solid var(--myntra-border);
+  background: #FAFAFA;
+}
+
+.card-action-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.card-action-btn:active {
+  background: #EFEFEF;
+}
+
 /* ============================================================
    SCREEN 3 — PRODUCT DETAIL
    ============================================================ */
