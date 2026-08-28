@@ -276,10 +276,10 @@
       const labelHigh = document.getElementById('label-high') || document.querySelector('.verdict-bar-labels span:first-child');
       const labelLow = document.getElementById('label-low') || document.querySelector('.verdict-bar-labels span:last-child');
       
-      // Force extra margin on the container to prevent vertical overlap with title even if CSS is cached
+      // Force extra padding on the container to prevent vertical overlap with title even if CSS is cached
       const barContainer = document.querySelector('.verdict-bar-container');
       if (barContainer) {
-        barContainer.style.marginTop = '12px';
+        barContainer.style.paddingTop = '24px';
       }
 
       if (verdict.avgPosition < 15) {
