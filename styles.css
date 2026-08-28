@@ -712,6 +712,47 @@ body {
   background: var(--myntra-light);
 }
 
+/* ---- Buy Now / Add to Bag action row (non-functional) ---- */
+.detail-action-row {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: var(--myntra-white);
+  border-top: 1px solid var(--myntra-border);
+}
+
+.btn-buy-now,
+.btn-add-to-bag {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: default;
+  opacity: 1;
+}
+
+.btn-buy-now {
+  background: var(--myntra-white);
+  border: 1.5px solid #FF3F6C;
+  color: #FF3F6C;
+}
+
+.btn-add-to-bag {
+  background: #FF3F6C;
+  border: 1.5px solid #FF3F6C;
+  color: #fff;
+}
+
+.btn-buy-now:disabled,
+.btn-add-to-bag:disabled {
+  opacity: 1; /* keep fully visible even though non-functional */
+}
+
 /* ---- Product Image ---- */
 .detail-image {
   width: 100%;

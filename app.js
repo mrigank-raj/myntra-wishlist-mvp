@@ -207,9 +207,16 @@
       text += "\nWaiting could bring it back down, but that isn't guaranteed.";
     } else {
       zone = 'yellow';
-      label = 'Solid Pick';
       badgeClass = 'verdict-yellow';
-      text = 'This is close to what it typically sells for (avg ' + formatPrice(product.average) + ').';
+      if (pctDiff < 0) {
+        // Genuinely, if modestly, below average — a real fact worth stating plainly
+        label = 'Fair Deal';
+        text = 'Slightly below what this typically sells for (avg ' + formatPrice(product.average) + ') — a fair price if you\'re ready to buy.';
+      } else {
+        // At or above average — no real reason to act now, say so plainly
+        label = 'Solid Pick';
+        text = 'Right around what this typically sells for (avg ' + formatPrice(product.average) + ').';
+      }
     }
 
     // Bar and average tick positions based on real range

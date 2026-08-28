@@ -27,9 +27,10 @@ time to buy, based on real historical price data (not predictions).
 ## VERDICT LOGIC (this is fixed — do not change without asking)
 % difference = (current - average) / average * 100
 
-- % difference < -15%  → "Good time to buy" (green zone)
-- -15% to +15%         → "Okay, fair price" (yellow zone)
-- % difference > +15%  → "Consider waiting" (orange/red zone)
+- % difference < -15%  → "Steal Deal" (green zone)
+- -15% to 0%           → "Fair Deal" (yellow zone, genuinely below average — stated plainly)
+- 0% to +15%           → "Solid Pick" (yellow zone, at or above average — no urgency implied)
+- % difference > +15%  → "Wait For Drop" (orange/red zone)
 
 Bar marker position = current price's location, computed relative to average, 
 not simply plotted between lowest and highest.
