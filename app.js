@@ -196,7 +196,11 @@
       var range = product.highest - product.lowest;
       if (range > 0 && ((product.current - product.lowest) / range) <= 0.15) {
         var gapToLowest = product.current - product.lowest;
-        text += '\nJust ' + formatPrice(gapToLowest) + ' away from its lowest recorded price.';
+        if (gapToLowest <= 0) {
+          text += '\nThis is the lowest price we\'ve recorded for this item.';
+        } else {
+          text += '\nJust ' + formatPrice(gapToLowest) + ' away from its lowest recorded price.';
+        }
       }
     } else if (pctDiff > 15) {
       zone = 'red';
