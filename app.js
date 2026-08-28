@@ -200,14 +200,14 @@
       }
     } else if (pctDiff > 15) {
       zone = 'red';
-      label = 'Consider waiting';
+      label = 'Wait For Drop';
       badgeClass = 'verdict-red';
       var overpay = product.current - product.average;
       text = "You'd pay " + formatPrice(overpay) + ' more than its typical price of ' + formatPrice(product.average) + '.';
       text += "\nWaiting could bring it back down, but that isn't guaranteed.";
     } else {
       zone = 'yellow';
-      label = 'Okay, fair price';
+      label = 'Solid Pick';
       badgeClass = 'verdict-yellow';
       text = 'This is close to what it typically sells for (avg ' + formatPrice(product.average) + ').';
     }
