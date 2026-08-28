@@ -203,7 +203,7 @@
       if (pctDiff < 0) {
         // Genuinely, if modestly, below average — a real fact worth stating plainly
         label = 'Fair Deal';
-        text = 'Slightly below what this typically sells for.';
+        text = 'Price is below what this typically sells for.';
       } else {
         // At or above average — no real reason to act now, say so plainly
         label = 'Solid Pick';
