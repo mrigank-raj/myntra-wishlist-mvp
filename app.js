@@ -173,7 +173,7 @@
   // ================================================================
   // VERDICT LOGIC — exactly per PROJECT_CONTEXT.md
   // % difference = (current - average) / average * 100
-  //   < -15%  → "Good time to buy"  (green)
+  //   < -15%  → "Steal Deal"  (green)
   //   -15% to +15% → "Okay, fair price" (yellow)
   //   > +15%  → "Consider waiting"  (orange/red)
   //
@@ -188,7 +188,7 @@
 
     if (pctDiff < -15) {
       zone = 'green';
-      label = 'Good time to buy';
+      label = 'Steal Deal';
       badgeClass = 'verdict-green';
       var savings = product.average - product.current;
       text = "You'd save " + formatPrice(savings) + ' compared to what this usually sells for.';
