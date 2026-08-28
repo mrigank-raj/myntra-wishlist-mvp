@@ -945,10 +945,10 @@ body {
    ============================================================ */
 .home-click-hint {
   position: absolute;
-  top: 15px;
-  right: 57px;
-  width: 300px;
-  height: 400px;
+  top: 7px;
+  right: 54px;
+  width: 320px;
+  height: 450px;
   pointer-events: none;
   z-index: 1000;
   opacity: 0;
@@ -963,11 +963,13 @@ body {
   position: absolute;
   top: 0;
   right: 0;
+  width: 100%;
+  height: 100%;
 }
 .hint-text {
   position: absolute;
   bottom: 0px;
-  left: 0px;
+  left: 20px;
   font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
