@@ -154,7 +154,7 @@ body {
 }
 
 /* ============================================================
-   WISHLIST NUDGE — The star of the show
+   WISHLIST ICON WRAPPER
    ============================================================ */
 .wishlist-nudge-wrapper {
   position: relative;
@@ -165,73 +165,6 @@ body {
 
 .wishlist-btn {
   z-index: 3;
-}
-
-/* Pulsing rings */
-.pulse-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2.5px solid var(--myntra-pink);
-  opacity: 0;
-  z-index: 1;
-  pointer-events: none;
-  animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-}
-.pulse-ring.delay {
-  animation-delay: 0.6s;
-}
-
-@keyframes pulseRing {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.7;
-  }
-  80%, 100% {
-    transform: translate(-50%, -50%) scale(1.4);
-    opacity: 0;
-  }
-}
-
-/* ============================================================
-   WISHLIST PRODUCT TOUR POINTER
-   ============================================================ */
-.tour-pointer {
-  position: absolute;
-  top: 100%;
-  right: -10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  pointer-events: none;
-  z-index: 100;
-  animation: floatPointer 2s ease-in-out infinite;
-}
-
-.tour-arrow {
-  margin-right: 20px;
-  margin-bottom: 4px;
-}
-
-.tour-tooltip {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #282C3F;
-  background: #ffffff;
-  padding: 10px 18px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0,0,0,0.08);
-  white-space: nowrap;
-}
-
-@keyframes floatPointer {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(5px); }
 }
 
 /* ============================================================
@@ -490,7 +423,246 @@ body {
 }
 
 /* ============================================================
-   SCREEN 2 — WISHLIST
+   SCREEN 1 — WHATSAPP MOCKUP (Trigger 1: Price Drop)
+   ============================================================ */
+.wa-screen {
+  background: #E5DDD5;
+  background-image:
+    radial-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+    radial-gradient(rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: 0 0, 13px 13px;
+}
+
+.wa-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px;
+  background: #075E54;
+  color: #fff;
+}
+
+.wa-back-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.wa-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wa-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #FF3F6C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wa-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.wa-contact-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wa-contact-sub {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.75);
+}
+
+.wa-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+.wa-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px 20px;
+}
+
+.wa-date-chip {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.wa-date-chip span {
+  background: #E1F2FB;
+  color: #4A7A94;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.wa-message-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.wa-bubble {
+  max-width: 84%;
+  background: #FFFFFF;
+  border-radius: 4px 12px 12px 12px;
+  padding: 8px 8px 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+.wa-message-wrapper:active .wa-bubble {
+  transform: scale(0.98);
+}
+
+.wa-bubble-product {
+  display: flex;
+  gap: 8px;
+  padding: 4px 4px 8px;
+}
+
+.wa-bubble-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: var(--img-bg, #F0F0F3);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.wa-bubble-real-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+
+.wa-bubble-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.wa-bubble-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #111B21;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wa-bubble-price-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.wa-old-price {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #667781;
+  text-decoration: line-through;
+}
+
+.wa-new-price {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #1FA04B;
+}
+
+.wa-save-chip {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #1FA04B;
+  background: #E3F6E8;
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.1px;
+}
+
+.wa-bubble-text {
+  font-size: 0.82rem;
+  color: #111B21;
+  line-height: 1.4;
+  padding: 2px 4px 10px;
+}
+
+.wa-bubble-cta {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #00A5F4;
+  padding: 9px 4px 6px;
+  border-top: 1px solid #EDEDED;
+}
+
+.wa-bubble-time {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: flex-end;
+  font-size: 0.62rem;
+  color: #667781;
+  padding: 4px 4px 0;
+}
+
+.wa-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: #F0F0F0;
+}
+
+.wa-input-fake {
+  flex: 1;
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  color: #94969F;
+}
+
+.wa-mic-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #075E54;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SCREEN 3 — WISHLIST
    ============================================================ */
 .simple-header {
   display: flex;
@@ -693,9 +865,13 @@ body {
 .card-action-btn:active {
   background: #EFEFEF;
 }
+.card-action-btn:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
 
 /* ============================================================
-   SCREEN 3 — PRODUCT DETAIL
+   SCREEN 4 — PRODUCT DETAIL
    ============================================================ */
 .detail-heart-btn {
   width: 38px;
@@ -772,8 +948,7 @@ body {
 /* ---- Product Info ---- */
 .detail-info {
   background: var(--myntra-white);
-  padding: 18px 16px 20px;
-  border-bottom: 1px solid var(--myntra-border);
+  padding: 18px 16px 16px;
 }
 
 .detail-name {
@@ -787,8 +962,17 @@ body {
 .detail-price-row {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
+
+.detail-price-was {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--myntra-gray);
+  text-decoration: line-through;
+}
+.detail-price-was[hidden] { display: none; }
 
 .detail-price {
   font-size: 1.3rem;
@@ -796,186 +980,81 @@ body {
   color: var(--myntra-dark);
 }
 
-/* ---- Verdict Section ---- */
-.verdict-section {
-  background: var(--myntra-white);
-  margin-top: 8px;
-  padding: 18px 16px 20px;
-  border-top: 1px solid var(--myntra-border);
-  border-bottom: 1px solid var(--myntra-border);
+.detail-price-save {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1FA04B;
+  background: #E3F6E8;
+  padding: 3px 9px;
+  border-radius: 12px;
+}
+.detail-price-save[hidden] { display: none; }
+
+/* ---- Price Confidence Card (replaces the old verdict bar) ---- */
+.verdict-card {
+  margin: 6px 16px 18px;
+  padding: 15px 16px 14px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--verdict-border, #FFC2D1);
+  background: var(--verdict-bg, #FFF5F7);
 }
 
-.verdict-header {
+.verdict-card-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 24px;
+  gap: 9px;
+  margin-bottom: 7px;
 }
 
-.verdict-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--myntra-dark);
-  letter-spacing: 0.2px;
-}
-
-/* ---- Verdict Bar ---- */
-.verdict-bar-container {
-  margin-bottom: 16px;
-}
-
-.verdict-bar-track {
-  height: 10px;
-  border-radius: 5px;
-  background: linear-gradient(
-    to right,
-    #FF3B30 0%,
-    #FF6B6B 20%,
-    #FFAA33 35%,
-    #FFD60A 50%,
-    #A8D94A 65%,
-    #34C759 75%,
-    #34C759 100%
-  );
-  position: relative;
-  margin: 0 8px;
-}
-
-.verdict-bar-marker {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+.verdict-card-badge {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: var(--verdict-accent, #FF3F6C);
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
 }
 
-.marker-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--myntra-dark);
-  border: 2.5px solid var(--myntra-white);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
-}
-
-.marker-price-label {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-size: 0.68rem;
+.verdict-card-heading {
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--myntra-dark);
-  background: var(--myntra-white);
-  padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--myntra-border);
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  letter-spacing: 0.1px;
 }
 
-.verdict-bar-labels {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  margin-top: 6px;
-  padding: 0 0;
-  font-size: 0.62rem;
-  font-weight: 500;
-  color: var(--myntra-gray);
-}
-
-#label-high, #label-low {
-  transition: opacity 0.3s ease;
-}
-
-#average-label {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* ---- Verdict Badge ---- */
-.verdict-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: var(--badge-bg, #F0FFF4);
-  margin-bottom: 10px;
-}
-
-.verdict-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--badge-color, #34C759);
-}
-
-.verdict-badge-text {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--badge-color, #34C759);
-}
-
-/* Badge color variants */
-.verdict-badge.verdict-green {
-  --badge-bg: #E8F9EE;
-  --badge-color: #1FA04B;
-}
-.verdict-badge.verdict-yellow {
-  --badge-bg: #FFF9E6;
-  --badge-color: #C59000;
-}
-.verdict-badge.verdict-red {
-  --badge-bg: #FFF0EE;
-  --badge-color: #E03E2D;
-}
-
-/* ---- Verdict Text ---- */
-.verdict-text {
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: #535766;
+.verdict-card-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--myntra-dark);
   line-height: 1.5;
-  white-space: pre-line;
-  margin-bottom: 18px;
+  margin-bottom: 6px;
 }
 
-/* ---- Price Range Row ---- */
-.price-range-row {
-  display: flex;
-  justify-content: space-between;
-  background: var(--myntra-light);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-}
-
-.price-range-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.price-range-label {
-  font-size: 0.65rem;
-  font-weight: 500;
+.verdict-card-caption {
+  font-size: 0.72rem;
+  font-weight: 400;
   color: var(--myntra-gray);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 
-.price-range-value {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--myntra-dark);
+/* Zone variants — color communicates the verdict, copy states only facts */
+.verdict-card.zone-green,
+.verdict-card.zone-fair {
+  --verdict-border: #FFC2D1;
+  --verdict-bg: #FFF5F7;
+  --verdict-accent: #FF3F6C;
+}
+.verdict-card.zone-neutral {
+  --verdict-border: #E2E3E8;
+  --verdict-bg: #F7F7F9;
+  --verdict-accent: #6E7180;
+}
+.verdict-card.zone-caution {
+  --verdict-border: #FFDCA8;
+  --verdict-bg: #FFF8EC;
+  --verdict-accent: #C4650A;
 }
 
 /* ============================================================

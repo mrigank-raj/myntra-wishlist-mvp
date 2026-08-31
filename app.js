@@ -118,30 +118,37 @@
   // ================================================================
   // DOM REFS
   // ================================================================
+  var screenWhatsapp = document.getElementById('screen-whatsapp');
   var screenHome = document.getElementById('screen-home');
   var screenWishlist = document.getElementById('screen-wishlist');
   var screenProduct = document.getElementById('screen-product');
   var btnWishlist = document.getElementById('btn-wishlist');
   var btnBackHome = document.getElementById('btn-back-home');
   var btnBackWishlist = document.getElementById('btn-back-wishlist');
+  var btnWaBack = document.getElementById('btn-wa-back');
   var wishlistGrid = document.getElementById('wishlist-grid');
+
+  // WhatsApp mockup DOM refs (Trigger 1 — Price Drop)
+  var waMessage = document.getElementById('wa-message');
+  var waBubbleImage = document.getElementById('wa-bubble-image');
+  var waBubbleName = document.getElementById('wa-bubble-name');
+  var waOldPrice = document.getElementById('wa-old-price');
+  var waNewPrice = document.getElementById('wa-new-price');
+  var waSaveChip = document.getElementById('wa-save-chip');
 
   // Product detail DOM refs
   var productDetailTitle = document.getElementById('product-detail-title');
   var detailImage = document.getElementById('detail-image');
   var detailImageIcon = document.getElementById('detail-image-icon');
   var detailName = document.getElementById('detail-name');
+  var detailPriceWas = document.getElementById('detail-price-was');
   var detailPrice = document.getElementById('detail-price');
-  var verdictMarker = document.getElementById('verdict-marker');
-  var markerPriceLabel = document.getElementById('marker-price-label');
-  var verdictBadge = document.getElementById('verdict-badge');
-  var verdictBadgeDot = document.getElementById('verdict-badge-dot');
-  var verdictBadgeText = document.getElementById('verdict-badge-text');
-  var verdictText = document.getElementById('verdict-text');
-  var detailLowest = document.getElementById('detail-lowest');
-  var detailAverage = document.getElementById('detail-average');
-  var detailHighest = document.getElementById('detail-highest');
-  var averageLabel = document.getElementById('average-label');
+  var detailPriceSave = document.getElementById('detail-price-save');
+  var verdictCard = document.getElementById('verdict-card');
+  var verdictCardBadge = document.getElementById('verdict-card-badge');
+  var verdictCardIcon = document.getElementById('verdict-card-icon');
+  var verdictCardHeading = document.getElementById('verdict-card-heading');
+  var verdictCardText = document.getElementById('verdict-card-text');
 
   // ================================================================
   // HELPERS
@@ -171,70 +178,88 @@
   }
 
   // ================================================================
-  // VERDICT LOGIC — exactly per PROJECT_CONTEXT.md
+  // VERDICT LOGIC — thresholds unchanged from V1 per PROJECT_CONTEXT.md
   // % difference = (current - average) / average * 100
-  //   < -15%  → "Steal Deal"  (green)
-  //   -15% to +15% → "Okay, fair price" (yellow)
-  //   > +15%  → "Consider waiting"  (orange/red)
+  //   < -15%      → "Verified Low Price"  (pink/green zone)
+  //   -15% to 0%  → "Price Drop"          (pink/green zone, milder)
+  //   0% to +15%  → "Typical Price"       (neutral zone)
+  //   > +15%      → "Above Average Price" (caution zone)
   //
-  // Bar marker position = current price's location relative to average
+  // 2026-08-31: the two "below average" zones now lead with the ₹ savings
+  // amount and never say "average" — per the user's explicit call that the
+  // customer-facing copy shouldn't expose the average-based methodology,
+  // only the amount they're saving. The underlying comparison (current vs.
+  // average) still computes the zone/threshold; only the two savings
+  // zones' COPY dropped the word "average". Neutral/caution zones aren't
+  // savings claims, so they still name the average they're measured against.
+  //
+  // Presentation changed from a bar+marker to a compact card (see
+  // renderProductDetail) — the % thresholds themselves are untouched.
+  // Copy states only facts derived from real PRODUCT_DATA: no
+  // predictions, no invented confidence scores, one sentence.
   // ================================================================
+  var VERDICT_ICONS = {
+    check: '<polyline points="4 12 9 17 20 6"/>',
+    info: '<circle cx="12" cy="7.4" r="1.3" fill="#fff" stroke="none"/><line x1="12" y1="11" x2="12" y2="16.5"/>',
+    up: '<line x1="12" y1="18" x2="12" y2="6"/><polyline points="6 12 12 6 18 12"/>'
+  };
+
   function computeVerdict(product) {
     var pctDiff = ((product.current - product.average) / product.average) * 100;
-    var absPctDiff = Math.abs(pctDiff);
-    var roundedPct = Math.round(absPctDiff);
-
-    var zone, label, badgeClass, text;
+    var zoneClass, icon, heading, text;
 
     if (pctDiff < -15) {
-      zone = 'green';
-      label = 'Steal Deal';
-      badgeClass = 'verdict-green';
-      var savings = product.average - product.current;
-      text = "You'd save " + formatPrice(savings) + ' compared to what this usually sells for.';
-    } else if (pctDiff > 15) {
-      zone = 'red';
-      label = 'Wait For Drop';
-      badgeClass = 'verdict-red';
-      text = 'Slightly higher than what this typically sells for.';
+      zoneClass = 'zone-green';
+      icon = 'check';
+      heading = 'Verified Low Price';
+      text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
+    } else if (pctDiff < 0) {
+      // Genuinely, if modestly, below average — a real saving worth stating plainly
+      zoneClass = 'zone-fair';
+      icon = 'check';
+      heading = 'Price Drop';
+      text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
+    } else if (pctDiff <= 15) {
+      // At or above average — no savings to report, so this is the one place
+      // we do name the average, since there's no ₹ amount to lead with instead
+      zoneClass = 'zone-neutral';
+      icon = 'info';
+      heading = 'Typical Price';
+      text = 'Right around its typical average of ' + formatPrice(product.average) + '.';
     } else {
-      zone = 'yellow';
-      badgeClass = 'verdict-yellow';
-      if (pctDiff < 0) {
-        // Genuinely, if modestly, below average — a real fact worth stating plainly
-        label = 'Fair Deal';
-        text = 'Price is below what this typically sells for.';
-      } else {
-        // At or above average — no real reason to act now, say so plainly
-        label = 'Solid Pick';
-        text = 'Right around what this typically sells for.';
-      }
+      zoneClass = 'zone-caution';
+      icon = 'up';
+      heading = 'Above Average Price';
+      text = formatPrice(product.current - product.average) + ' above its typical average of ' + formatPrice(product.average) + '.';
     }
-
-    // Bar and average tick positions based on real range
-    var range = product.highest - product.lowest;
-    var barPosition = 50; // default
-    var avgPosition = 50;
-    
-    if (range > 0) {
-      // Inverted logic: Left = High, Right = Low
-      barPosition = 100 - (((product.current - product.lowest) / range) * 100);
-      avgPosition = 100 - (((product.average - product.lowest) / range) * 100);
-    }
-
-    // Clamp between 4% and 96% so markers stay visible on bar edges
-    barPosition = Math.max(4, Math.min(96, barPosition));
-    avgPosition = Math.max(4, Math.min(96, avgPosition));
 
     return {
       pctDiff: pctDiff,
-      zone: zone,
-      label: label,
-      badgeClass: badgeClass,
-      text: text,
-      barPosition: barPosition,
-      avgPosition: avgPosition
+      zoneClass: zoneClass,
+      icon: icon,
+      heading: heading,
+      text: text
     };
+  }
+
+  // ================================================================
+  // WHATSAPP MOCKUP — TRIGGER 1: PRICE DROP
+  // Per Project_Contexr.md STRICT rule: no real day-by-day price history
+  // exists, so "Old price" = product.average and "New price" =
+  // product.current — the same honest logic as the verdict card, just
+  // delivered proactively. Only call this for a product where current is
+  // genuinely below average (that's Trigger 1's defined condition) —
+  // it is not a generic "show any price" renderer.
+  // ================================================================
+  var PRICE_DROP_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 2; })[0]; // Nautica chinos — current == lowest, well below average
+
+  function renderWhatsAppPriceDrop(product) {
+    waBubbleImage.style.setProperty('--img-bg', product.imgBg);
+    waBubbleImage.innerHTML = '<img class="wa-bubble-real-image" src="' + product.image + '" alt="' + product.name + '">';
+    waBubbleName.textContent = product.name;
+    waOldPrice.textContent = formatPrice(product.average);
+    waNewPrice.textContent = formatPrice(product.current);
+    waSaveChip.textContent = 'Save ' + formatPrice(product.average - product.current);
   }
 
   // ================================================================
@@ -250,63 +275,29 @@
     detailImage.style.setProperty('--img-bg', product.imgBg);
     detailImageIcon.innerHTML = '<img class="product-real-image" src="' + product.image + '" alt="' + product.name + '">';
 
-    // Info — only name and current price (from PRODUCT_DATA)
+    // Info — name and current price (from PRODUCT_DATA)
     detailName.textContent = product.name;
     detailPrice.textContent = formatPrice(product.current);
 
-    // Verdict bar and average marker positions
-    verdictMarker.style.left = verdict.barPosition + '%';
-    markerPriceLabel.textContent = formatPrice(product.current);
-    
-    // Prevent marker label from overflowing edges horizontally
-    if (verdict.barPosition < 15) {
-      markerPriceLabel.style.transform = 'translateX(0)'; // align left edge
-    } else if (verdict.barPosition > 85) {
-      markerPriceLabel.style.transform = 'translateX(-100%)'; // align right edge
+    // "Was" price + savings chip only when current is genuinely below
+    // average — showing a strikethrough otherwise would imply a discount
+    // that isn't real. Chip leads with the ₹ amount saved, not a labeled
+    // "average" comparison — what matters to the shopper is the saving.
+    if (verdict.pctDiff < 0) {
+      detailPriceWas.textContent = formatPrice(product.average);
+      detailPriceWas.hidden = false;
+      detailPriceSave.textContent = 'Save ' + formatPrice(product.average - product.current);
+      detailPriceSave.hidden = false;
     } else {
-      markerPriceLabel.style.transform = 'translateX(-50%)'; // center align
-    }
-    
-    if (averageLabel) {
-      averageLabel.style.left = verdict.avgPosition + '%';
-      
-      // Prevent average label from overlapping High/Low text
-      // Use querySelector to ensure it works even if index.html is cached and missing IDs
-      const labelHigh = document.getElementById('label-high') || document.querySelector('.verdict-bar-labels span:first-child');
-      const labelLow = document.getElementById('label-low') || document.querySelector('.verdict-bar-labels span:last-child');
-      
-      // Force extra padding on the container to prevent vertical overlap with title even if CSS is cached
-      const barContainer = document.querySelector('.verdict-bar-container');
-      if (barContainer) {
-        barContainer.style.paddingTop = '24px';
-      }
-
-      if (verdict.avgPosition < 15) {
-        averageLabel.style.transform = 'translateX(0)';
-        if (labelHigh) labelHigh.style.opacity = '0';
-        if (labelLow) labelLow.style.opacity = '1';
-      } else if (verdict.avgPosition > 85) {
-        averageLabel.style.transform = 'translateX(-100%)';
-        if (labelHigh) labelHigh.style.opacity = '1';
-        if (labelLow) labelLow.style.opacity = '0';
-      } else {
-        averageLabel.style.transform = 'translateX(-50%)';
-        if (labelHigh) labelHigh.style.opacity = '1';
-        if (labelLow) labelLow.style.opacity = '1';
-      }
+      detailPriceWas.hidden = true;
+      detailPriceSave.hidden = true;
     }
 
-    // Verdict badge
-    verdictBadge.className = 'verdict-badge ' + verdict.badgeClass;
-    verdictBadgeText.textContent = verdict.label;
-
-    // Verdict text
-    verdictText.textContent = verdict.text;
-
-    // Price range (all from PRODUCT_DATA: lowest, average, highest)
-    detailLowest.textContent = formatPrice(product.lowest);
-    detailAverage.textContent = formatPrice(product.average);
-    detailHighest.textContent = formatPrice(product.highest);
+    // Price confidence card (replaces the old bar+marker verdict UI)
+    verdictCard.className = 'verdict-card ' + verdict.zoneClass;
+    verdictCardIcon.innerHTML = VERDICT_ICONS[verdict.icon];
+    verdictCardHeading.textContent = verdict.heading;
+    verdictCardText.textContent = verdict.text;
   }
 
   // ================================================================
@@ -338,13 +329,13 @@
           '</div>' +
         '</div>' +
         '<div class="product-card-actions">' +
-          '<button class="card-action-btn" aria-label="Remove" onclick="event.stopPropagation()">' +
+          '<button class="card-action-btn" aria-label="Remove" disabled onclick="event.stopPropagation()">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#696B79" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
           '</button>' +
-          '<button class="card-action-btn" aria-label="Add to bag" onclick="event.stopPropagation()">' +
+          '<button class="card-action-btn" aria-label="Add to bag" disabled onclick="event.stopPropagation()">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#696B79" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M9 6a3 3 0 0 0 6 0"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>' +
           '</button>' +
-          '<button class="card-action-btn" aria-label="Share" onclick="event.stopPropagation()">' +
+          '<button class="card-action-btn" aria-label="Share" disabled onclick="event.stopPropagation()">' +
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#696B79" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.5" x2="15.4" y2="6.5"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/></svg>' +
           '</button>' +
         '</div>';
@@ -365,6 +356,25 @@
   // NAVIGATION
   // ================================================================
 
+  // WhatsApp message (Trigger 1) → Product Detail, skipping Home/Wishlist
+  // entirely — simulates being pulled back into the app from outside it.
+  waMessage.addEventListener('click', function () {
+    renderProductDetail(PRICE_DROP_PRODUCT);
+    switchScreen(screenWhatsapp, screenProduct, false);
+  });
+  waMessage.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      waMessage.click();
+    }
+  });
+
+  // WhatsApp screen → Home (the manual-navigation fallback path; Home
+  // stays reachable but is no longer the primary entry point)
+  btnWaBack.addEventListener('click', function () {
+    switchScreen(screenWhatsapp, screenHome, false);
+  });
+
   // Home → Wishlist
   btnWishlist.addEventListener('click', function () {
     switchScreen(screenHome, screenWishlist, false);
@@ -383,6 +393,7 @@
   // ================================================================
   // INIT
   // ================================================================
+  renderWhatsAppPriceDrop(PRICE_DROP_PRODUCT);
   buildWishlistCards();
 
 })();

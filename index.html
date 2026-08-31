@@ -11,8 +11,63 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- ======================== SCREEN 1: MYNTRA HOME ======================== -->
-  <div id="screen-home" class="screen active">
+  <!-- ======================== SCREEN 1: WHATSAPP MOCKUP (Trigger 1 — Price Drop) ======================== -->
+  <!-- Primary entry point for the demo. Trigger 2 (staleness reminder) is not built yet — next step. -->
+  <div id="screen-whatsapp" class="screen active wa-screen">
+    <header class="wa-header">
+      <button class="back-btn wa-back-btn" id="btn-wa-back" aria-label="Open Myntra">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <div class="wa-contact">
+        <div class="wa-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="wa-contact-info">
+          <span class="wa-contact-name">Myntra
+            <svg class="wa-verified-badge" width="13" height="13" viewBox="0 0 24 24" fill="#53BDEB"><path d="M12 2l2.4 2.2 3.2-.6.9 3.1 3.1.9-.6 3.2L23 12l-2.2 2.4.6 3.2-3.1.9-.9 3.1-3.2-.6L12 23l-2.4-2.2-3.2.6-.9-3.1-3.1-.9.6-3.2L1 12l2.2-2.4-.6-3.2 3.1-.9.9-3.1 3.2.6z"/><path d="M9 12.5l2 2 4-4.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="wa-contact-sub">Business Account</span>
+        </div>
+      </div>
+      <div class="wa-header-icons">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+    </header>
+
+    <div class="wa-chat-body">
+      <div class="wa-date-chip"><span>Today</span></div>
+
+      <div class="wa-message-wrapper" id="wa-message" tabindex="0" role="button" aria-label="Open item on Myntra">
+        <div class="wa-bubble">
+          <div class="wa-bubble-product">
+            <div class="wa-bubble-image" id="wa-bubble-image"></div>
+            <div class="wa-bubble-info">
+              <div class="wa-bubble-name" id="wa-bubble-name">Product name</div>
+              <div class="wa-bubble-price-row">
+                <span class="wa-old-price" id="wa-old-price">₹0</span>
+                <span class="wa-new-price" id="wa-new-price">₹0</span>
+                <span class="wa-save-chip" id="wa-save-chip">Save ₹0</span>
+              </div>
+            </div>
+          </div>
+          <p class="wa-bubble-text">The price on this wishlist item just dropped.</p>
+          <div class="wa-bubble-cta">View Item</div>
+          <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wa-input-bar">
+      <div class="wa-input-fake">Message</div>
+      <div class="wa-mic-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 2: MYNTRA HOME ======================== -->
+  <div id="screen-home" class="screen">
 
     <!-- ---- TOP HEADER BAR ---- -->
     <header class="header">
@@ -30,24 +85,12 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#282C3F" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           </button>
 
-          <!-- WISHLIST ICON — the ONE interactive element -->
+          <!-- WISHLIST ICON — reachable via normal navigation; WhatsApp is the
+               primary entry point in V2, so this is no longer onboarding-highlighted -->
           <div class="wishlist-nudge-wrapper" id="wishlist-nudge-wrapper">
             <button class="icon-btn wishlist-btn" id="btn-wishlist" aria-label="Wishlist">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#282C3F" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
-            <!-- Pulsing ring -->
-            <span class="pulse-ring"></span>
-            <span class="pulse-ring delay"></span>
-            <!-- Polished Onboarding Pointer -->
-            <div class="tour-pointer" id="tour-pointer">
-              <svg class="tour-arrow" width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <!-- Thin smooth arrow -->
-                <path d="M 10 35 C 10 15, 30 25, 30 5" stroke="#FF3F6C" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-                <!-- Small arrowhead -->
-                <path d="M 23 12 L 30 5 L 35 12" stroke="#FF3F6C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              </svg>
-              <div class="tour-tooltip">Tap the Wishlist</div>
-            </div>
           </div>
 
           <button class="icon-btn" aria-label="Bag" disabled>
@@ -189,7 +232,7 @@
     </nav>
   </div>
 
-  <!-- ======================== SCREEN 2: WISHLIST ======================== -->
+  <!-- ======================== SCREEN 3: WISHLIST ======================== -->
   <div id="screen-wishlist" class="screen">
     <header class="header simple-header">
       <button class="back-btn" id="btn-back-home" aria-label="Go back">
@@ -210,7 +253,7 @@
     </div>
   </div>
 
-  <!-- ======================== SCREEN 3: PRODUCT DETAIL ======================== -->
+  <!-- ======================== SCREEN 4: PRODUCT DETAIL ======================== -->
   <div id="screen-product" class="screen">
     <header class="header simple-header">
       <button class="back-btn" id="btn-back-wishlist" aria-label="Go back">
@@ -231,57 +274,35 @@
       <!-- Product Info -->
       <div class="detail-info">
         <div class="detail-name" id="detail-name">Product Name</div>
-        <div class="detail-price-row">
+        <div class="detail-price-row" id="detail-price-row">
+          <span class="detail-price-was" id="detail-price-was">₹0</span>
           <span class="detail-price" id="detail-price">₹0</span>
+          <span class="detail-price-save" id="detail-price-save">Save ₹0</span>
         </div>
       </div>
 
-      <!-- Price Confidence Verdict Bar -->
-      <div class="verdict-section">
-        <div class="verdict-header">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#282C3F" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span class="verdict-title">Price Analysis</span>
+      <!-- Price Confidence Card (replaces the old bar-style verdict) -->
+      <div class="verdict-card" id="verdict-card">
+        <div class="verdict-card-row">
+          <span class="verdict-card-badge" id="verdict-card-badge">
+            <svg id="verdict-card-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 9 17 20 6"/></svg>
+          </span>
+          <span class="verdict-card-heading" id="verdict-card-heading">Verified Low Price</span>
         </div>
+        <p class="verdict-card-text" id="verdict-card-text"></p>
+        <p class="verdict-card-caption">Based on this item's own price history.</p>
+      </div>
 
-        <!-- The bar -->
-        <div class="verdict-bar-container">
-          <div class="verdict-bar-track">
-            <div class="verdict-bar-marker" id="verdict-marker">
-              <div class="marker-dot"></div>
-              <div class="marker-price-label" id="marker-price-label">₹0</div>
-            </div>
-          </div>
-          <div class="verdict-bar-labels" id="verdict-bar-labels">
-            <span id="label-high">High</span>
-            <span id="average-label">Average</span>
-            <span id="label-low">Low</span>
-          </div>
-        </div>
-
-        <!-- Verdict badge -->
-        <div class="verdict-badge" id="verdict-badge">
-          <span class="verdict-badge-dot" id="verdict-badge-dot"></span>
-          <span class="verdict-badge-text" id="verdict-badge-text">Okay, fair price</span>
-        </div>
-
-        <!-- Verdict text (one factual sentence) -->
-        <p class="verdict-text" id="verdict-text"></p>
-
-        <!-- Price range info -->
-        <div class="price-range-row">
-          <div class="price-range-item">
-            <span class="price-range-label">Lowest</span>
-            <span class="price-range-value" id="detail-lowest">₹0</span>
-          </div>
-          <div class="price-range-item">
-            <span class="price-range-label">Average</span>
-            <span class="price-range-value" id="detail-average">₹0</span>
-          </div>
-          <div class="price-range-item">
-            <span class="price-range-label">Highest</span>
-            <span class="price-range-value" id="detail-highest">₹0</span>
-          </div>
-        </div>
+      <!-- Action buttons (non-functional, per project scope) -->
+      <div class="detail-action-row">
+        <button class="btn-buy-now" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF3F6C" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M9 6a3 3 0 0 0 6 0"/></svg>
+          Buy Now
+        </button>
+        <button class="btn-add-to-bag" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M9 6a3 3 0 0 0 6 0"/></svg>
+          Add to Bag
+        </button>
       </div>
 
       <!-- Action buttons (non-functional, per project scope) -->
