@@ -139,11 +139,12 @@
   var waBubbleName = document.getElementById('wa-bubble-name');
   var waOldPrice = document.getElementById('wa-old-price');
   var waNewPrice = document.getElementById('wa-new-price');
-  var waPriceNote = document.getElementById('wa-price-note');
+  var waStealSticker = document.getElementById('wa-steal-sticker');
   var waVerdictCard = document.getElementById('wa-verdict-card');
   var waVerdictIcon = document.getElementById('wa-verdict-icon');
   var waVerdictHeading = document.getElementById('wa-verdict-heading');
   var waVerdictText = document.getElementById('wa-verdict-text');
+  var waVerdictCaption = document.getElementById('wa-verdict-caption');
 
   // WhatsApp mockup DOM refs (Trigger 2 — Staleness Reminder)
   var waMessageStaleness = document.getElementById('wa-message-staleness');
@@ -158,18 +159,34 @@
   var detailName = document.getElementById('detail-name');
   var detailPriceWas = document.getElementById('detail-price-was');
   var detailPrice = document.getElementById('detail-price');
-  var detailPriceNote = document.getElementById('detail-price-note');
+  var detailStealSticker = document.getElementById('detail-steal-sticker');
   var verdictCard = document.getElementById('verdict-card');
   var verdictCardBadge = document.getElementById('verdict-card-badge');
   var verdictCardIcon = document.getElementById('verdict-card-icon');
   var verdictCardHeading = document.getElementById('verdict-card-heading');
   var verdictCardText = document.getElementById('verdict-card-text');
+  var verdictCardCaption = document.getElementById('verdict-card-caption');
 
   // ================================================================
   // HELPERS
   // ================================================================
   function formatPrice(n) {
     return '₹' + n.toLocaleString('en-IN');
+  }
+
+  // Struck-through "markup" price — 2026-09-01, per the user's explicit
+  // instruction: this is a decorative "was" anchor only, not the number
+  // the savings claim is computed against. It's the midpoint of average
+  // and highest (both real PRODUCT_DATA fields — no invented number),
+  // which is why it's always >= average for every product in the
+  // catalog. The real comparison baseline stays "average" everywhere
+  // else: the verdict card's "Usually sells for ₹X" caption and the
+  // "You save ₹X" text are both still computed off product.average vs.
+  // product.current, completely independent of this value. The two
+  // numbers are deliberately allowed to disagree — this one is for
+  // show, that one is the honest claim.
+  function markupPrice(product) {
+    return Math.round((product.average + product.highest) / 2);
   }
 
   function escapeHtml(str) {
@@ -253,7 +270,13 @@
       zoneClass: zoneClass,
       icon: icon,
       heading: heading,
-      text: text
+      text: text,
+      // 2026-09-01: the card's caption used to be a static "Based on this
+      // item's own price history." line. Now shows the reference average
+      // instead, at the user's request — same average the verdict itself
+      // is computed against, just stated once here instead of in a
+      // separate price-row chip.
+      caption: 'Usually sells for ' + formatPrice(product.average)
     };
   }
 
@@ -270,6 +293,7 @@
     refs.icon.innerHTML = VERDICT_ICONS[verdict.icon];
     refs.heading.textContent = verdict.heading;
     refs.text.textContent = verdict.text;
+    refs.caption.textContent = verdict.caption;
   }
 
   // Demo persona name for the WhatsApp greeting only — there is no login
@@ -298,19 +322,26 @@
     waBubbleImage.style.setProperty('--img-bg', product.imgBg);
     waBubbleImage.innerHTML = '<img class="wa-bubble-real-image" src="' + product.image + '" alt="' + product.name + '">';
     waBubbleName.textContent = product.name;
-    waOldPrice.textContent = formatPrice(product.average);
+    waOldPrice.textContent = formatPrice(markupPrice(product));
     waNewPrice.textContent = formatPrice(product.current);
-    // 2026-09-01: was a "Save ₹X" chip, but the verdict card right below
-    // already states that — this now shows the reference price instead,
-    // so the two elements say different things rather than repeating.
-    waPriceNote.textContent = 'Usually sells for ' + formatPrice(product.average);
 
     var verdict = computeVerdict(product);
+
+    // 2026-09-01: was a "Usually sells for ₹X" note here — that text now
+    // lives in the verdict card's caption instead (see paintVerdictCard),
+    // so this spot carries a "Steal Deal" sticker instead. Reserved for
+    // the strongest zone only (Verified Low Price, >15% below average) —
+    // calling a merely-below-average price a "steal" would overstate the
+    // milder Price Drop zone, so the sticker only shows where the claim
+    // actually holds.
+    waStealSticker.hidden = verdict.zoneClass !== 'zone-green';
+
     paintVerdictCard({
       card: waVerdictCard,
       icon: waVerdictIcon,
       heading: waVerdictHeading,
-      text: waVerdictText
+      text: waVerdictText,
+      caption: waVerdictCaption
     }, verdict);
   }
 
@@ -369,29 +400,30 @@
     detailName.textContent = product.name;
     detailPrice.textContent = formatPrice(product.current);
 
-    // "Was" price + reference-price note only when current is genuinely
-    // below average — showing a strikethrough otherwise would imply a
-    // discount that isn't real.
-    // 2026-09-01: this chip used to repeat "Save ₹X", which duplicated
-    // the verdict card's "You save ₹X on this item." line right below
-    // it — same number stated twice. Now shows the reference price
-    // instead (matches the same fix applied to the WhatsApp message).
+    // "Was" (markup) price only when current is genuinely below average —
+    // showing a strikethrough otherwise would imply a discount that
+    // isn't real. See markupPrice() for what this value is and isn't.
     if (verdict.pctDiff < 0) {
-      detailPriceWas.textContent = formatPrice(product.average);
+      detailPriceWas.textContent = formatPrice(markupPrice(product));
       detailPriceWas.hidden = false;
-      detailPriceNote.textContent = 'Usually sells for ' + formatPrice(product.average);
-      detailPriceNote.hidden = false;
     } else {
       detailPriceWas.hidden = true;
-      detailPriceNote.hidden = true;
     }
+
+    // 2026-09-01: this spot used to carry a "Usually sells for ₹X" note
+    // (that text now lives in the verdict card's caption below instead).
+    // Now shows a "Steal Deal" sticker, reserved for the strongest zone
+    // only (Verified Low Price) — same reasoning as the WhatsApp message,
+    // see renderWhatsAppPriceDrop.
+    detailStealSticker.hidden = verdict.zoneClass !== 'zone-green';
 
     // Price confidence card (replaces the old bar+marker verdict UI)
     paintVerdictCard({
       card: verdictCard,
       icon: verdictCardIcon,
       heading: verdictCardHeading,
-      text: verdictCardText
+      text: verdictCardText,
+      caption: verdictCardCaption
     }, verdict);
   }
 

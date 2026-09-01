@@ -17,18 +17,44 @@ existing, honest price-context card (V1's feature) helps them decide.
 ### Trigger 1 — Price Drop (stronger evidence)
 Fires when a wishlisted item's price has genuinely dropped. Message shows:
 - Product image/name
-- **Old price (struck through) → New price**, plus a small "Save ₹X" chip
-  (X = Old − New, real arithmetic on the two real values below)
-- CTA (e.g. "View Item")
+- **Old price (struck through) → New price**, plus a "Steal Deal" sticker
+  when the drop is strong enough (Verified Low Price zone only — see the
+  "Steal Deal" sticker note below)
+- The embedded verdict card (see "Embedded verdict card" below), whose
+  caption states the reference average price
+- CTA ("View This Deal")
 
 **Old/new price rule (STRICT):** we do NOT have real day-by-day price
 history — only aggregate Current/Lowest/Average/Highest per product. Do NOT
 invent a specific "yesterday's price." Instead:
-- **"Old price" = the product's real `Average` value**
 - **"New price" = the product's real `Current` value**
-This is the same honest logic already used in the existing verdict-card copy
-("you'd save ₹X compared to what this usually sells for") — just delivered
-proactively instead of passively.
+- **"Old"/markup price (struck through) = `Math.round((Average + Highest) / 2)`**
+  — revised 2026-09-01, see "Markup price is decorative" below. Both
+  `Average` and `Highest` are real PRODUCT_DATA fields; this is arithmetic
+  on two real values, not an invented number, and by construction it's
+  always ≥ Average for every product in the catalog.
+- **"Usually sells for ₹X" (verdict card caption) = the product's real
+  `Average` value** — this, not the struck-through markup price, is the
+  actual comparison baseline.
+
+**Markup price is decorative, not the savings baseline (2026-09-01):**
+the struck-through price and the "You save ₹X" claim are deliberately
+**not** required to reconcile with each other. Earlier in this session I
+raised a concern that showing a markup price higher than `Average` would
+make the strikethrough-to-current gap disagree with the "You save ₹X"
+text (e.g. Down Jacket: strikethrough implies saving ₹4,749, card states
+₹1,553) — mirroring the padded-MRP-plus-understated-discount pattern
+this project has otherwise avoided. The user's explicit clarification:
+the markup price is "just for show" — struck through for visual effect
+only, like a real MRP tag — while "Usually sells for" (Average) is what
+`Current` is actually compared against, and "You save ₹X" is calculated
+from that comparison alone, same as before. The two numbers are allowed
+to differ; only the caption/verdict-text figures make an honesty claim,
+and those are untouched — still pure `Average` vs. `Current` arithmetic,
+still matching each other exactly. This is the same honest logic already
+used in the existing verdict-card copy ("you'd save ₹X compared to what
+this usually sells for") — just delivered proactively instead of
+passively.
 
 **Message format (2026-09-01):** restructured to match a real competitor
 example (a Nykaa WhatsApp price-drop message the user has screenshot
@@ -36,15 +62,15 @@ evidence of): plain greeting ("Hi there,"), a neutral framing line ("Price
 update for an item on your wishlist."), a "Reply STOP to unsubscribe"
 compliance line, then a native-style full-width green CTA button (icon +
 "View Item") below a divider, replacing the earlier inline blue text link.
-The product thumbnail + old/new price + "Save ₹X" chip stays — Nykaa's own
-template is plain text with no savings figure shown, so that part remains
-our own addition, not something copied from the reference.
+The product thumbnail + old/new price stays — Nykaa's own template is
+plain text with no savings figure shown, so that part remains our own
+addition, not something copied from the reference.
 
 **Embedded verdict card (2026-09-01, per user sketch):** the WhatsApp
 message now greets by name ("Hi [name],") and embeds the same "Verified
 Low Price" verdict card shown on the product detail screen (checkmark
-badge, heading, "You save ₹X on this item.", "Based on this item's own
-price history." caption) directly in the message body, replacing the
+badge, heading, "You save ₹X on this item.", plus a caption — see below
+for what the caption says) directly in the message body, replacing the
 plain "Price update for an item on your wishlist." line. This reuses the
 exact same computeVerdict() output and the same card markup as the
 product detail screen (paintVerdictCard() now paints both) — no new
@@ -68,6 +94,24 @@ made only for the WhatsApp message's price-row chip, at the user's
 specific instruction. The same fix (same "Usually sells for ₹X" chip,
 same rationale) was then also applied to the product detail screen's
 price row, at the user's request, resolving the same redundancy there.
+
+**"Steal Deal" sticker + verdict card caption swap (2026-09-01):** the
+"Usually sells for ₹X" chip above moved into the verdict card's caption
+instead — the caption was previously a static, non-dynamic line ("Based
+on this item's own price history."); it now reads "Usually sells for
+₹X" (X = product.average, computed once in computeVerdict() and painted
+by paintVerdictCard() in both places, same shared-logic pattern as the
+rest of the verdict card). The price-row spot that chip vacated now
+shows a small tilted "Steal Deal" sticker instead, at the user's
+request. **Scoping judgment call, not explicitly specified by the
+user:** the sticker only shows for the strongest verdict zone (Verified
+Low Price, >15% below average) — it's hidden for the milder Price Drop
+zone (0–15% below average). Calling a marginally-below-average price a
+"steal" would overstate it for that zone in a way that conflicts with
+this project's honest-copy rule; "steal deal" is a stronger, more
+subjective claim than "Verified Low Price" already is, so it's held to
+the same bar. Worth reconsidering if the intent was for it to appear on
+every below-average price.
 
 **CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
 to the price-drop hook already shown in the message rather than being a
@@ -160,24 +204,30 @@ concept, real product.
 
 ## PRODUCT DETAIL SCREEN — still the actual feature
 - Product image, name, current price
-  - When current is genuinely below average: shown with the average
-    struck through and a "Usually sells for ₹X" note (X = average).
-    2026-09-01: this used to be a "Save ₹X" chip, but that repeated the
-    verdict card's "You save ₹X on this item." line right below it —
-    same number stated twice, per the user's explicit call. Now shows
-    the reference price instead, so the two elements say different
-    things. The struck-through price alone still reads as a normal
-    "was" price, same as any e-commerce markdown.
+  - When current is genuinely below average: shown with the markup price
+    struck through (see "Markup price is decorative" above — this is
+    `(Average + Highest) / 2`, not `Average`, and is not the number used
+    in the savings claim). The struck-through price alone reads as a
+    normal "was" price, same as any e-commerce markdown.
+  - When the drop is strong enough (Verified Low Price zone only): a
+    small tilted "Steal Deal" sticker next to the price. 2026-09-01: this
+    spot went through two revisions — first a "Save ₹X" chip (dropped
+    because it repeated the verdict card's "You save ₹X on this item."
+    line), then "Usually sells for ₹X" (dropped because that text moved
+    into the verdict card's caption instead — see below), now the
+    sticker. See the "Steal Deal" sticker note above for why it's scoped
+    to one zone only.
 - Price-context card ("Verified Low Price" / price-confidence content —
   see VERDICT LOGIC). This is a compact bordered card (badge icon +
-  one-line heading + one factual sentence + a muted "Based on this
-  item's own price history." caption) — the earlier horizontal
-  bar-with-marker UI, and the separate Lowest/Average/Highest
-  breakdown row beneath it, were both removed at the user's explicit
-  request (2026-08-31): "we do not want them to know its avg... tell
-  them how much they are saving." The underlying verdict computation
-  (current vs. average) did not change — only what's disclosed in the
-  UI did.
+  one-line heading + one factual sentence + a caption). The caption used
+  to be a static "Based on this item's own price history." line; as of
+  2026-09-01 it states the reference average price instead ("Usually
+  sells for ₹X") — the earlier horizontal bar-with-marker UI, and the
+  separate Lowest/Average/Highest breakdown row beneath it, were both
+  removed at the user's explicit request (2026-08-31): "we do not want
+  them to know its avg... tell them how much they are saving." The
+  underlying verdict computation (current vs. average) did not change —
+  only what's disclosed in the UI did.
 - Add to Cart (non-functional, visual only — same as V1)
 - **No auto-order, no pre-filled one-tap purchase, no bypassing a normal
   cart/checkout path.** The user must always end up in a normal,

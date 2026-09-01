@@ -645,15 +645,28 @@ body {
   color: #1FA04B;
 }
 
-.wa-price-note {
-  font-size: 0.64rem;
-  font-weight: 600;
-  color: #667781;
-  background: #F0F1F1;
-  padding: 2px 7px;
-  border-radius: 10px;
-  letter-spacing: 0.1px;
+/* "Steal Deal" sticker — 2026-09-01, replaces the old "Usually sells
+   for ₹X" note in this spot (that text moved into the verdict card's
+   caption instead). Styled to read as a small sticker slapped onto the
+   price row: warm gradient distinct from the Myntra-pink used
+   elsewhere, slight tilt, soft shadow. JS shows this only for the
+   strongest verdict zone (Verified Low Price) — see renderWhatsAppPriceDrop. */
+.wa-steal-sticker {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF7A3D, #FF3F6C);
+  padding: 3px 9px;
+  border-radius: 4px;
+  transform: rotate(-4deg);
+  box-shadow: 0 2px 5px rgba(255, 63, 108, 0.35);
+  white-space: nowrap;
 }
+.wa-steal-sticker[hidden] { display: none; }
 
 .wa-bubble-greeting {
   font-size: 0.82rem;
@@ -1046,15 +1059,24 @@ body {
   color: var(--myntra-dark);
 }
 
-.detail-price-note {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--myntra-gray);
-  background: #F0F1F1;
-  padding: 3px 9px;
-  border-radius: 12px;
+/* "Steal Deal" sticker — same treatment and same strongest-zone-only
+   visibility rule as .wa-steal-sticker; see that rule's comment. */
+.detail-steal-sticker {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF7A3D, #FF3F6C);
+  padding: 3px 10px;
+  border-radius: 4px;
+  transform: rotate(-4deg);
+  box-shadow: 0 2px 5px rgba(255, 63, 108, 0.35);
+  white-space: nowrap;
 }
-.detail-price-note[hidden] { display: none; }
+.detail-steal-sticker[hidden] { display: none; }
 
 /* ---- Price Confidence Card (replaces the old verdict bar) ---- */
 .verdict-card {
