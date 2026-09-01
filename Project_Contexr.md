@@ -205,6 +205,12 @@ used in the Verified Low Price/Price Drop zones.
   a "You save ₹X" line reads slightly inconsistent, but that wasn't
   part of what was asked this round.
 
+**"You save" → "You are saving" (2026-09-01).** Applied consistently to
+every occurrence of the phrase (Verified Low Price, Price Drop, and the
+new Typical Price highest-price framing above) — the same underlying
+claim, tense change only, kept uniform across all three since they
+share the exact wording pattern.
+
 **CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
 to the price-drop hook already shown in the message rather than being a
 generic navigation label. Considered and explicitly rejected for CTR:
@@ -400,13 +406,16 @@ concept, real product.
   user-controlled flow from here.
 
 ## VERDICT LOGIC (thresholds unchanged from V1 — do not change without asking)
-% difference = (current - average) / average * 100
-- % difference < -15%  → "Verified Low Price" (pink card, checkmark badge) — text: "You save ₹X on this item."
-- -15% to 0%           → "Price Drop" (pink card, checkmark badge, genuinely below average) — text: "You save ₹X on this item."
-- 0% to +15%           → "Typical Price" (neutral gray card, info badge, at/above average) — text names the average; no savings to report
-- % difference > +15%  → "Above Average Price" (amber card, up-arrow badge) — text names the average; no savings to report
-Card heading/copy updated 2026-08-31; the four % thresholds above are
-untouched. No bar, marker, or Lowest/Average/Highest breakdown in the UI
+% difference = (current - average) / average * 100. Table below reflects
+the current state as of 2026-09-01 (colors/copy have moved since V1; the
+four % thresholds themselves have not):
+- % difference < -15%  → "Verified Low Price" (pink card, checkmark badge) — text: "You are saving ₹X on this item." + " It's rarely been priced this low." when current is within 20% of the item's recorded lowest.
+- -15% to 0%           → "Price Drop" (pink card, checkmark badge, genuinely below average) — same text pattern as above, including the near-lowest clause when it applies.
+- 0% to +15%           → "Typical Price" (green card, checkmark badge) — "You are saving ₹X on this item." vs. the item's highest recorded price, with a caption disclosing that basis, when that gap is ≥10% of the highest price; otherwise "Right around its typical average of ₹X."
+- % difference > +15%  → "Above Average Price" (gray card, info badge) — names the average; no savings framing.
+Card heading/copy updated 2026-08-31 and again 2026-09-01 (see the dated
+notes above for the full history of each change); the four % thresholds
+above are untouched. No bar, marker, or Lowest/Average/Highest breakdown in the UI
 anymore — the two "below average" zones' copy also dropped the word
 "average" entirely and leads with the ₹ savings amount instead. The
 neutral/caution zones still name the average since there's no savings
@@ -532,14 +541,24 @@ and rejected:
 - **Trigger 1 (price drop) example:** Nautica Linen Cotton Slim Fit Chinos —
   Current (2600) = Lowest, genuinely below Average (5062) — a real, dramatic,
   honestly-sourced drop to show
-- **Trigger 2 (reminder) example:** KALLOS VANITY Set of 8 Lip Liquid
-  Lipsticks (id 4) — current ₹7,502 vs average ₹7,424, ~1% off, the
-  closest thing to current = average in this dataset (no product has
-  it exactly). **2026-09-01, changed from Slim Fit Polo Shirt** — the
-  Polo Shirt is itself ~42% below its own average (Verified Low Price
-  zone), so tapping through Trigger 2's message landed on a savings
-  card despite the message carrying no price signal at all — misleading,
-  since this trigger isn't about price. Swapped to KALLOS instead of
-  inventing a new product with contrived stats. The bubble copy
-  ("Still deciding on the perfect shade?") was updated to match — it
-  previously said "the right shirt", specific to the old product.
+- **Trigger 2 (reminder) example:** KEF ANC Bluetooth Headphones (id 7) —
+  current ₹21,999 vs average ₹20,781, ~6% above (Typical Price zone),
+  consistent with a non-price-based trigger. **2026-09-01, changed from
+  Slim Fit Polo Shirt → KALLOS Lipsticks → KEF Headphones** (user's own
+  choice for this round). Polo Shirt was ~42% below its own average
+  (Verified Low Price zone), so tapping through Trigger 2's message
+  landed on a savings card despite the message carrying no price signal
+  at all — misleading, since this trigger isn't about price. Real data
+  throughout, never a contrived product. The bubble copy ("Still
+  deciding on the perfect pair?") was updated to match.
+
+- **Wishlist home page display order (2026-09-01):** Floral Printed
+  Lapel Collar Shirt (id 9) now shows first in the wishlist grid;
+  Shawl Collar Overcoat (id 0) moved to last. User's own request. Only
+  `PRODUCTS` array order changed (`buildWishlistCards` renders in array
+  order) — ids, and every filter-by-id lookup (`PRICE_DROP_PRODUCT`,
+  `STALENESS_PRODUCT`), are unaffected. Both products' real data is
+  unchanged and both are still reachable in the grid; this is a reorder,
+  not a deletion. Note: this does mean the "Above Average Price" zone
+  (Overcoat) is no longer the first card an evaluator sees — it's still
+  present, just at the end of the grid.

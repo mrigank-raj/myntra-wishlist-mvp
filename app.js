@@ -9,16 +9,21 @@
   // PRODUCT DATA — exact values from PROJECT_CONTEXT.md PRODUCT_DATA
   // Fields: name, current, lowest, average, highest (nothing else)
   // ================================================================
+  // 2026-09-01: wishlist grid display order — Floral Shirt (id 9) now
+  // shown first, Overcoat (id 0) moved to last. Array order drives the
+  // wishlist grid render order (buildWishlistCards iterates PRODUCTS in
+  // order); ids are unchanged so PRICE_DROP_PRODUCT/STALENESS_PRODUCT
+  // lookups by id are unaffected by this reorder.
   var PRODUCTS = [
     {
-      id: 0,
-      name: 'Shawl Collar Single-Breasted Overcoat',
-      current: 2495,
-      lowest: 1295,
-      average: 2029,
-      highest: 4799,
-      image: 'assets/product_0.png',
-      imgBg: '#EDE8E3'
+      id: 9,
+      name: 'Floral Printed Lapel Collar Shirt With Trousers',
+      current: 1451,
+      lowest: 923,
+      average: 1299,
+      highest: 1649,
+      image: 'assets/product_9.png',
+      imgBg: '#F0EBE3'
     },
     {
       id: 1,
@@ -101,14 +106,14 @@
       imgBg: '#EDE6F0'
     },
     {
-      id: 9,
-      name: 'Floral Printed Lapel Collar Shirt With Trousers',
-      current: 1451,
-      lowest: 923,
-      average: 1299,
-      highest: 1649,
-      image: 'assets/product_9.png',
-      imgBg: '#F0EBE3'
+      id: 0,
+      name: 'Shawl Collar Single-Breasted Overcoat',
+      current: 2495,
+      lowest: 1295,
+      average: 2029,
+      highest: 4799,
+      image: 'assets/product_0.png',
+      imgBg: '#EDE8E3'
     }
   ];
 
@@ -190,7 +195,7 @@
   // which is why it's always >= average for every product in the
   // catalog. The real comparison baseline stays "average" everywhere
   // else: the verdict card's "Usually sells for ₹X" caption and the
-  // "You save ₹X" text are both still computed off product.average vs.
+  // "You are saving ₹X" text are both still computed off product.average vs.
   // product.current, completely independent of this value. The two
   // numbers are deliberately allowed to disagree — this one is for
   // show, that one is the honest claim.
@@ -280,13 +285,13 @@
       zoneClass = 'zone-green';
       icon = 'check';
       heading = 'Verified Low Price';
-      text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
+      text = 'You are saving ' + formatPrice(product.average - product.current) + ' on this item.';
     } else if (pctDiff < 0) {
       // Genuinely, if modestly, below average — a real saving worth stating plainly
       zoneClass = 'zone-fair';
       icon = 'check';
       heading = 'Price Drop';
-      text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
+      text = 'You are saving ' + formatPrice(product.average - product.current) + ' on this item.';
     } else if (pctDiff <= 15) {
       // At or above average — no savings to report vs. average, so this is
       // one of two places we name a reference price directly instead of a
@@ -326,11 +331,11 @@
     // structure: the main line states a ₹ savings amount (same phrasing
     // as the real savings zones), and a caption underneath discloses the
     // comparison is vs. the highest price, not average — so it can't be
-    // mistaken for the real average-based "You save" claim used above.
+    // mistaken for the real average-based "You are saving" claim used above.
     var highestGap = zoneClass === 'zone-typical' ? product.highest - product.current : 0;
     var highestGapMeaningful = zoneClass === 'zone-typical' && highestGap >= product.highest * 0.10;
     if (highestGapMeaningful) {
-      text = 'You save ' + formatPrice(highestGap) + ' on this item.';
+      text = 'You are saving ' + formatPrice(highestGap) + ' on this item.';
     }
 
     // 2026-09-01: no "Usually sells for ₹X" caption for the Above Average
@@ -472,12 +477,11 @@
   // Price zone), so tapping through to its detail page showed a savings
   // card despite this trigger's WhatsApp message carrying no price
   // signal at all — misleading, since the reminder isn't about price.
-  // KALLOS Lipsticks (id 4) sits almost exactly at its own average
-  // (current ₹7,502 vs average ₹7,424, ~1% off — "Typical Price" zone),
-  // which is consistent with a non-price-based trigger. Real data, not
-  // picked to hit an exact match — no product in PRODUCT_DATA has
-  // current === average precisely.
-  var STALENESS_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 4; })[0]; // KALLOS Lipsticks
+  // Then briefly KALLOS Lipsticks (id 4), which sat almost exactly at
+  // its own average. Now KEF ANC Bluetooth Headphones (id 7) — current
+  // ₹21,999 vs average ₹20,781 (~6% above, "Typical Price" zone), still
+  // consistent with a non-price-based trigger. Real data throughout.
+  var STALENESS_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 7; })[0]; // KEF ANC Bluetooth Headphones
 
   function renderWhatsAppStaleness(product) {
     waBubbleGreeting2.textContent = 'Hi ' + DEMO_USER_NAME + ',';
