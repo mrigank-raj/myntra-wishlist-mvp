@@ -497,6 +497,35 @@ body {
   padding-right: 4px;
 }
 
+/* Prototype-only control — lets you preview either trigger message.
+   Deliberately styled apart from the WhatsApp chrome above (Myntra pink,
+   not WhatsApp green) so it doesn't read as part of the simulated app. */
+.wa-trigger-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--myntra-border);
+}
+.wa-trigger-tab {
+  flex: 1;
+  border: 1.5px solid var(--myntra-border);
+  background: #FFFFFF;
+  color: var(--myntra-gray);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 7px 6px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.wa-trigger-tab.active {
+  background: var(--myntra-pink);
+  border-color: var(--myntra-pink);
+  color: #FFFFFF;
+}
+
 .wa-chat-body {
   flex: 1;
   overflow-y: auto;
@@ -522,6 +551,7 @@ body {
   justify-content: flex-start;
   cursor: pointer;
 }
+.wa-message-wrapper[hidden] { display: none; }
 
 .wa-bubble {
   max-width: 84%;
@@ -597,28 +627,46 @@ body {
   color: #1FA04B;
 }
 
-.wa-save-chip {
+.wa-price-note {
   font-size: 0.64rem;
-  font-weight: 700;
-  color: #1FA04B;
-  background: #E3F6E8;
+  font-weight: 600;
+  color: #667781;
+  background: #F0F1F1;
   padding: 2px 7px;
   border-radius: 10px;
   letter-spacing: 0.1px;
+}
+
+.wa-bubble-greeting {
+  font-size: 0.82rem;
+  color: #111B21;
+  line-height: 1.4;
+  padding: 2px 4px 6px;
 }
 
 .wa-bubble-text {
   font-size: 0.82rem;
   color: #111B21;
   line-height: 1.4;
-  padding: 2px 4px 10px;
+  padding: 2px 4px 8px;
+}
+
+.wa-bubble-unsub {
+  font-size: 0.68rem;
+  color: #667781;
+  line-height: 1.3;
+  padding: 0 4px 6px;
 }
 
 .wa-bubble-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   text-align: center;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #00A5F4;
+  color: #1FA04B;
   padding: 9px 4px 6px;
   border-top: 1px solid #EDEDED;
 }
@@ -980,15 +1028,15 @@ body {
   color: var(--myntra-dark);
 }
 
-.detail-price-save {
+.detail-price-note {
   font-size: 0.8rem;
-  font-weight: 700;
-  color: #1FA04B;
-  background: #E3F6E8;
+  font-weight: 600;
+  color: var(--myntra-gray);
+  background: #F0F1F1;
   padding: 3px 9px;
   border-radius: 12px;
 }
-.detail-price-save[hidden] { display: none; }
+.detail-price-note[hidden] { display: none; }
 
 /* ---- Price Confidence Card (replaces the old verdict bar) ---- */
 .verdict-card {
@@ -1055,6 +1103,23 @@ body {
   --verdict-border: #FFDCA8;
   --verdict-bg: #FFF8EC;
   --verdict-accent: #C4650A;
+}
+
+/* Same card, compacted to fit inside the WhatsApp bubble (2026-09-01,
+   per user sketch) — sizing only, colors/copy come from the same
+   zone classes and computeVerdict() output as the product detail card */
+.wa-verdict-card {
+  margin: 2px 4px 10px;
+  padding: 12px 12px 11px;
+}
+.wa-verdict-card .verdict-card-heading {
+  font-size: 0.86rem;
+}
+.wa-verdict-card .verdict-card-text {
+  font-size: 0.8rem;
+}
+.wa-verdict-card .verdict-card-caption {
+  font-size: 0.68rem;
 }
 
 /* ============================================================

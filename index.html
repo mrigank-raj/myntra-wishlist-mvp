@@ -11,8 +11,11 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- ======================== SCREEN 1: WHATSAPP MOCKUP (Trigger 1 — Price Drop) ======================== -->
-  <!-- Primary entry point for the demo. Trigger 2 (staleness reminder) is not built yet — next step. -->
+  <!-- ======================== SCREEN 1: WHATSAPP MOCKUP (Trigger 1 — Price Drop, Trigger 2 — Staleness Reminder) ======================== -->
+  <!-- Primary entry point for the demo. The tab strip below is a prototype
+       control (not part of the simulated WhatsApp UI) that switches which
+       example message is shown — a real user would only ever receive one
+       or the other, never see a picker. -->
   <div id="screen-whatsapp" class="screen active wa-screen">
     <header class="wa-header">
       <button class="back-btn wa-back-btn" id="btn-wa-back" aria-label="Open Myntra">
@@ -35,6 +38,11 @@
       </div>
     </header>
 
+    <div class="wa-trigger-tabs" role="tablist" aria-label="Preview which trigger message Myntra would send">
+      <button class="wa-trigger-tab active" id="tab-trigger-1" role="tab" aria-selected="true">Trigger 1: Price Drop</button>
+      <button class="wa-trigger-tab" id="tab-trigger-2" role="tab" aria-selected="false">Trigger 2: Reminder</button>
+    </div>
+
     <div class="wa-chat-body">
       <div class="wa-date-chip"><span>Today</span></div>
 
@@ -47,12 +55,56 @@
               <div class="wa-bubble-price-row">
                 <span class="wa-old-price" id="wa-old-price">₹0</span>
                 <span class="wa-new-price" id="wa-new-price">₹0</span>
-                <span class="wa-save-chip" id="wa-save-chip">Save ₹0</span>
+                <span class="wa-price-note" id="wa-price-note">Usually sells for ₹0</span>
               </div>
             </div>
           </div>
-          <p class="wa-bubble-text">The price on this wishlist item just dropped.</p>
-          <div class="wa-bubble-cta">View Item</div>
+          <p class="wa-bubble-greeting" id="wa-bubble-greeting">Hi there,</p>
+          <div class="verdict-card wa-verdict-card" id="wa-verdict-card">
+            <div class="verdict-card-row">
+              <span class="verdict-card-badge" id="wa-verdict-badge">
+                <svg id="wa-verdict-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 9 17 20 6"/></svg>
+              </span>
+              <span class="verdict-card-heading" id="wa-verdict-heading">Verified Low Price</span>
+            </div>
+            <p class="verdict-card-text" id="wa-verdict-text"></p>
+            <p class="verdict-card-caption">Based on this item's own price history.</p>
+          </div>
+          <p class="wa-bubble-unsub">Reply STOP to unsubscribe</p>
+          <div class="wa-bubble-cta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1FA04B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            View This Deal
+          </div>
+          <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+
+      <!-- Trigger 2 — Wishlist Nudge (2026-09-01 rewrite: behavior-triggered,
+           not time-based). Fires when the user is actively browsing the
+           same category as a wishlisted item — a relevance signal, not an
+           elapsed-time countdown. No price data shown (this trigger
+           carries no price signal, per spec). Copy deliberately does NOT
+           say "you've been browsing X" — naming the detected category
+           back to the user like a mail-merge variable is exactly what
+           makes a message feel automated; instead it references the
+           shopper's ongoing search ("still hunting for the right shirt")
+           and the specific saved item, which reads as relevant without
+           announcing the tracking mechanism. See Project_Contexr.md. -->
+      <div class="wa-message-wrapper" id="wa-message-staleness" tabindex="0" role="button" aria-label="Open item on Myntra" hidden>
+        <div class="wa-bubble">
+          <div class="wa-bubble-product">
+            <div class="wa-bubble-image" id="wa-bubble-image-2"></div>
+            <div class="wa-bubble-info">
+              <div class="wa-bubble-name" id="wa-bubble-name-2">Product name</div>
+            </div>
+          </div>
+          <p class="wa-bubble-greeting" id="wa-bubble-greeting-2">Hi there,</p>
+          <p class="wa-bubble-text">Still hunting for the right shirt? This one's already waiting in your wishlist.</p>
+          <p class="wa-bubble-unsub">Reply STOP to unsubscribe</p>
+          <div class="wa-bubble-cta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1FA04B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Take Another Look
+          </div>
           <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
       </div>
@@ -277,7 +329,7 @@
         <div class="detail-price-row" id="detail-price-row">
           <span class="detail-price-was" id="detail-price-was">₹0</span>
           <span class="detail-price" id="detail-price">₹0</span>
-          <span class="detail-price-save" id="detail-price-save">Save ₹0</span>
+          <span class="detail-price-note" id="detail-price-note">Usually sells for ₹0</span>
         </div>
       </div>
 

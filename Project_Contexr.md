@@ -30,15 +30,100 @@ This is the same honest logic already used in the existing verdict-card copy
 ("you'd save ₹X compared to what this usually sells for") — just delivered
 proactively instead of passively.
 
-### Trigger 2 — Staleness Reminder (weaker evidence, explicitly a hypothesis)
-Fires after a wishlisted item hasn't been revisited in some time. Generic
-message, no price data needed (e.g. "Still thinking about this?").
-**IMPORTANT: there is no research evidence for any specific time interval.**
-Whatever interval is used in the prototype (even just for demo pacing) must
-be treated as a placeholder/design hypothesis, and must NOT be described
-anywhere (code comments, UI text, or eventual deck copy) as validated or
-research-backed. If asked to pick a number, pick one and label it clearly as
-illustrative only.
+**Message format (2026-09-01):** restructured to match a real competitor
+example (a Nykaa WhatsApp price-drop message the user has screenshot
+evidence of): plain greeting ("Hi there,"), a neutral framing line ("Price
+update for an item on your wishlist."), a "Reply STOP to unsubscribe"
+compliance line, then a native-style full-width green CTA button (icon +
+"View Item") below a divider, replacing the earlier inline blue text link.
+The product thumbnail + old/new price + "Save ₹X" chip stays — Nykaa's own
+template is plain text with no savings figure shown, so that part remains
+our own addition, not something copied from the reference.
+
+**Embedded verdict card (2026-09-01, per user sketch):** the WhatsApp
+message now greets by name ("Hi [name],") and embeds the same "Verified
+Low Price" verdict card shown on the product detail screen (checkmark
+badge, heading, "You save ₹X on this item.", "Based on this item's own
+price history." caption) directly in the message body, replacing the
+plain "Price update for an item on your wishlist." line. This reuses the
+exact same computeVerdict() output and the same card markup as the
+product detail screen (paintVerdictCard() now paints both) — no new
+numbers, no new logic, just the existing verdict surfaced one step
+earlier in the funnel instead of requiring a click-through to see it.
+The greeting name ("Mrigank") is a fixed demo-persona placeholder — there
+is no login system in this prototype, so it is not a claim about real
+user data.
+
+**WhatsApp price-row chip (2026-09-01):** once the verdict card was
+embedded directly below it, the price row's "Save ₹X" chip became
+redundant with the verdict card's "You save ₹X on this item." line —
+same number, stated twice. Changed the chip to "Usually sells for ₹X"
+(= product.average, same value already shown struck-through as the
+"old" price) so it adds the reference price instead of repeating the
+savings. **Note: this reintroduces "average" framing in this one spot**
+("usually sells for" functionally discloses the comparison is
+average-based) — a deliberate, explicit reversal of the earlier
+2026-08-31 decision to keep that disclosure out of user-facing copy,
+made only for the WhatsApp message's price-row chip, at the user's
+specific instruction. The same fix (same "Usually sells for ₹X" chip,
+same rationale) was then also applied to the product detail screen's
+price row, at the user's request, resolving the same redundancy there.
+
+**CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
+to the price-drop hook already shown in the message rather than being a
+generic navigation label. Considered and explicitly rejected for CTR:
+fake urgency copy ("price may not last") — no real data supports any
+future-price claim, and the verdict-text rules already forbid predicting
+future prices; fake social proof — no real view/purchase-count data exists;
+a "% off" figure next to the ₹ savings — mathematically reveals the
+average-based comparison, which contradicts the earlier explicit decision
+to keep "average" language out of user-facing copy; emoji — neither
+Nykaa's real template nor Myntra's own notification copy uses any.
+
+### Trigger 2 — Wishlist Nudge (weaker evidence, explicitly a hypothesis)
+Originally spec'd as a time-based staleness reminder ("hasn't been
+revisited in some time"). **Rewritten 2026-09-01** at the user's explicit
+call — his reasoning: a blind time-based reminder is more likely to drive
+unsubscribes than a message tied to genuine relevance, and the original
+copy read as generic/templated ("AI-ish"). The trigger is now
+**behavior-based**: it fires when the user is actively browsing the same
+category as something already on their wishlist, not on an elapsed-time
+countdown. Still no price data shown — this trigger carries no price
+signal, so showing price context would misrepresent why it was sent.
+
+**IMPORTANT — this is still an explicit hypothesis, not evidence.** The
+user's reasoning above (time-based nudges → more unsubscribes) is a
+sound product instinct, not something the interviews or surveys actually
+measured — treat it the same way as the old timing assumption: fine to
+justify a design decision, not fine to present as a validated finding.
+The behavior-based version also trades one unproven technical assumption
+for another: it assumes real-time category-matching against session
+browsing activity is buildable, where the old version assumed a
+validated revisit interval. Neither is backed by this project's
+research, and neither is actually implemented — both are simulated,
+static examples for this no-backend demo.
+
+**Copywriting principle (2026-09-01):** don't name the detected category
+back to the user in the message copy (e.g. "You've been browsing
+shirts — this one's already on your wishlist"). Literally restating the
+tracking variable is what makes a message read as automated/mail-merged.
+Reference the shopper's ongoing search naturally instead, and let the
+specific saved item (shown in the message itself) carry the relevance.
+
+**Built.** The WhatsApp screen has a prototype-only tab strip
+("Trigger 1: Price Drop" / "Trigger 2: Reminder") that switches which
+example message is shown — a real user would only ever receive one,
+never see a picker; the tabs exist for this demo only. Trigger 2's
+message: product image/name (no price row, no verdict card), "Hi
+[name]," greeting, "Still hunting for the right shirt? This one's
+already waiting in your wishlist.", "Reply STOP to unsubscribe", then a
+"Take Another Look" CTA (not "View This Deal" — there's no deal to
+reference here, and not "View Item" — this ties the CTA to the framing
+instead of being generic nav copy). Uses a different product than
+Trigger 1 (Slim Fit Polo Shirt, id 1) so the two examples are visibly
+distinct; there is no shoe product in PRODUCT_DATA, so "shirt" is used
+in the copy instead of the user's original "shoes" example — same
+concept, real product.
 
 ## Flow (5 screens)
 1. **WhatsApp message mockup screen** — shows either a Trigger 1 or Trigger
@@ -119,10 +204,8 @@ issues fixed (no logic/data changes):
 
 Open items surfaced but NOT resolved unilaterally (need a call from the
 project owner, not a design-review fix):
-- **Trigger 2 (staleness reminder) is entirely unbuilt.** The prototype
-  currently only demonstrates Trigger 1 (price drop). This is disclosed
-  honestly in the demo wrapper itself but is the single biggest
-  completeness gap.
+- ~~Trigger 2 (staleness reminder) is entirely unbuilt.~~ **Resolved
+  2026-09-01** — see the "Built" note under Trigger 2 above.
 - **"Verified Low Price" substantiation.** Since the Lowest/Average/
   Highest breakdown was removed from the product detail card (per the
   2026-08-31 savings-first copy change above), the card's "Verified" /
@@ -146,8 +229,9 @@ project owner, not a design-review fix):
   are pre-set/simulated for the demo
 - No login, no search, no other navigation beyond what's described above
 - No AI-generated predictive text of any kind
-- Do not present the Trigger 2 (staleness) interval as evidence-backed
-  anywhere — it isn't
+- Do not present Trigger 2's firing condition (originally a revisit
+  interval, now behavior/browsing-based) as evidence-backed anywhere —
+  neither version is; both are design hypotheses
 
 ## PRODUCT_DATA (hardcoded, no backend, no live fetching)
 

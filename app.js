@@ -130,11 +130,24 @@
 
   // WhatsApp mockup DOM refs (Trigger 1 — Price Drop)
   var waMessage = document.getElementById('wa-message');
+  var waBubbleGreeting = document.getElementById('wa-bubble-greeting');
   var waBubbleImage = document.getElementById('wa-bubble-image');
   var waBubbleName = document.getElementById('wa-bubble-name');
   var waOldPrice = document.getElementById('wa-old-price');
   var waNewPrice = document.getElementById('wa-new-price');
-  var waSaveChip = document.getElementById('wa-save-chip');
+  var waPriceNote = document.getElementById('wa-price-note');
+  var waVerdictCard = document.getElementById('wa-verdict-card');
+  var waVerdictIcon = document.getElementById('wa-verdict-icon');
+  var waVerdictHeading = document.getElementById('wa-verdict-heading');
+  var waVerdictText = document.getElementById('wa-verdict-text');
+
+  // WhatsApp mockup DOM refs (Trigger 2 — Staleness Reminder)
+  var waMessageStaleness = document.getElementById('wa-message-staleness');
+  var waBubbleGreeting2 = document.getElementById('wa-bubble-greeting-2');
+  var waBubbleImage2 = document.getElementById('wa-bubble-image-2');
+  var waBubbleName2 = document.getElementById('wa-bubble-name-2');
+  var tabTrigger1 = document.getElementById('tab-trigger-1');
+  var tabTrigger2 = document.getElementById('tab-trigger-2');
 
   // Product detail DOM refs
   var productDetailTitle = document.getElementById('product-detail-title');
@@ -143,7 +156,7 @@
   var detailName = document.getElementById('detail-name');
   var detailPriceWas = document.getElementById('detail-price-was');
   var detailPrice = document.getElementById('detail-price');
-  var detailPriceSave = document.getElementById('detail-price-save');
+  var detailPriceNote = document.getElementById('detail-price-note');
   var verdictCard = document.getElementById('verdict-card');
   var verdictCardBadge = document.getElementById('verdict-card-badge');
   var verdictCardIcon = document.getElementById('verdict-card-icon');
@@ -242,6 +255,26 @@
     };
   }
 
+  // Paints a computed verdict into one card's DOM refs — shared by the
+  // product detail screen and the WhatsApp bubble so both surfaces read
+  // off the exact same computeVerdict() output, never a second copy of
+  // the logic or the numbers.
+  function paintVerdictCard(refs, verdict) {
+    var baseClasses = refs.card.className.split(' ').filter(function (c) {
+      return c.indexOf('zone-') !== 0;
+    });
+    baseClasses.push(verdict.zoneClass);
+    refs.card.className = baseClasses.join(' ');
+    refs.icon.innerHTML = VERDICT_ICONS[verdict.icon];
+    refs.heading.textContent = verdict.heading;
+    refs.text.textContent = verdict.text;
+  }
+
+  // Demo persona name for the WhatsApp greeting only — there is no login
+  // system in this prototype, so this is a fixed display placeholder,
+  // not a claim about real user data.
+  var DEMO_USER_NAME = 'Mrigank';
+
   // ================================================================
   // WHATSAPP MOCKUP — TRIGGER 1: PRICE DROP
   // Per Project_Contexr.md STRICT rule: no real day-by-day price history
@@ -250,16 +283,71 @@
   // delivered proactively. Only call this for a product where current is
   // genuinely below average (that's Trigger 1's defined condition) —
   // it is not a generic "show any price" renderer.
+  //
+  // The message also embeds the same "Verified Low Price" verdict card
+  // shown on the product detail page (2026-09-01, per user sketch) —
+  // same computeVerdict() output, same component, just surfaced earlier
+  // in the funnel instead of requiring a click-through to see it.
   // ================================================================
   var PRICE_DROP_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 2; })[0]; // Nautica chinos — current == lowest, well below average
 
   function renderWhatsAppPriceDrop(product) {
+    waBubbleGreeting.textContent = 'Hi ' + DEMO_USER_NAME + ',';
     waBubbleImage.style.setProperty('--img-bg', product.imgBg);
     waBubbleImage.innerHTML = '<img class="wa-bubble-real-image" src="' + product.image + '" alt="' + product.name + '">';
     waBubbleName.textContent = product.name;
     waOldPrice.textContent = formatPrice(product.average);
     waNewPrice.textContent = formatPrice(product.current);
-    waSaveChip.textContent = 'Save ' + formatPrice(product.average - product.current);
+    // 2026-09-01: was a "Save ₹X" chip, but the verdict card right below
+    // already states that — this now shows the reference price instead,
+    // so the two elements say different things rather than repeating.
+    waPriceNote.textContent = 'Usually sells for ' + formatPrice(product.average);
+
+    var verdict = computeVerdict(product);
+    paintVerdictCard({
+      card: waVerdictCard,
+      icon: waVerdictIcon,
+      heading: waVerdictHeading,
+      text: waVerdictText
+    }, verdict);
+  }
+
+  // ================================================================
+  // WHATSAPP MOCKUP — TRIGGER 2: WISHLIST NUDGE
+  // Rewritten 2026-09-01 from a time-based "hasn't revisited in N days"
+  // reminder to a behavior-triggered one: fires when the user is
+  // actively browsing the same category as something already on their
+  // wishlist — a relevance signal, not a countdown. Generic message,
+  // deliberately NO price data — this trigger doesn't depend on any
+  // price signal, so showing price context here would misrepresent why
+  // the message was sent.
+  //
+  // Both the old time-based and this behavior-based version are
+  // simulated for this no-backend demo — neither is actually wired to
+  // real elapsed time or real browsing data. The behavior-based version
+  // is the stronger product idea (fires on genuine relevance rather than
+  // an arbitrary clock) but trades one unproven assumption for another:
+  // it assumes real-time category-matching against session activity is
+  // buildable, same as the old version assumed a validated revisit
+  // interval. Neither claim is backed by this project's research — see
+  // Project_Contexr.md.
+  //
+  // Copy note: deliberately does not say "you've been browsing X" —
+  // echoing the detected category back like a mail-merge variable is
+  // what makes a message read as automated. The message references the
+  // shopper's ongoing search instead ("still hunting for the right
+  // shirt") and the specific saved item, which reads as relevant
+  // without narrating the tracking mechanism. Uses a different product
+  // than Trigger 1 (Slim Fit Polo Shirt) so the two examples are
+  // visibly distinct products.
+  // ================================================================
+  var STALENESS_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 1; })[0]; // Slim Fit Polo Shirt
+
+  function renderWhatsAppStaleness(product) {
+    waBubbleGreeting2.textContent = 'Hi ' + DEMO_USER_NAME + ',';
+    waBubbleImage2.style.setProperty('--img-bg', product.imgBg);
+    waBubbleImage2.innerHTML = '<img class="wa-bubble-real-image" src="' + product.image + '" alt="' + product.name + '">';
+    waBubbleName2.textContent = product.name;
   }
 
   // ================================================================
@@ -279,25 +367,30 @@
     detailName.textContent = product.name;
     detailPrice.textContent = formatPrice(product.current);
 
-    // "Was" price + savings chip only when current is genuinely below
-    // average — showing a strikethrough otherwise would imply a discount
-    // that isn't real. Chip leads with the ₹ amount saved, not a labeled
-    // "average" comparison — what matters to the shopper is the saving.
+    // "Was" price + reference-price note only when current is genuinely
+    // below average — showing a strikethrough otherwise would imply a
+    // discount that isn't real.
+    // 2026-09-01: this chip used to repeat "Save ₹X", which duplicated
+    // the verdict card's "You save ₹X on this item." line right below
+    // it — same number stated twice. Now shows the reference price
+    // instead (matches the same fix applied to the WhatsApp message).
     if (verdict.pctDiff < 0) {
       detailPriceWas.textContent = formatPrice(product.average);
       detailPriceWas.hidden = false;
-      detailPriceSave.textContent = 'Save ' + formatPrice(product.average - product.current);
-      detailPriceSave.hidden = false;
+      detailPriceNote.textContent = 'Usually sells for ' + formatPrice(product.average);
+      detailPriceNote.hidden = false;
     } else {
       detailPriceWas.hidden = true;
-      detailPriceSave.hidden = true;
+      detailPriceNote.hidden = true;
     }
 
     // Price confidence card (replaces the old bar+marker verdict UI)
-    verdictCard.className = 'verdict-card ' + verdict.zoneClass;
-    verdictCardIcon.innerHTML = VERDICT_ICONS[verdict.icon];
-    verdictCardHeading.textContent = verdict.heading;
-    verdictCardText.textContent = verdict.text;
+    paintVerdictCard({
+      card: verdictCard,
+      icon: verdictCardIcon,
+      heading: verdictCardHeading,
+      text: verdictCardText
+    }, verdict);
   }
 
   // ================================================================
@@ -369,6 +462,38 @@
     }
   });
 
+  // WhatsApp message (Trigger 2) → Product Detail, same pattern as
+  // Trigger 1 but for the staleness-reminder example product.
+  waMessageStaleness.addEventListener('click', function () {
+    renderProductDetail(STALENESS_PRODUCT);
+    switchScreen(screenWhatsapp, screenProduct, false);
+  });
+  waMessageStaleness.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      waMessageStaleness.click();
+    }
+  });
+
+  // Trigger preview tabs — prototype-only control, switches which example
+  // message is visible. Not part of the simulated WhatsApp UI.
+  tabTrigger1.addEventListener('click', function () {
+    tabTrigger1.classList.add('active');
+    tabTrigger1.setAttribute('aria-selected', 'true');
+    tabTrigger2.classList.remove('active');
+    tabTrigger2.setAttribute('aria-selected', 'false');
+    waMessage.hidden = false;
+    waMessageStaleness.hidden = true;
+  });
+  tabTrigger2.addEventListener('click', function () {
+    tabTrigger2.classList.add('active');
+    tabTrigger2.setAttribute('aria-selected', 'true');
+    tabTrigger1.classList.remove('active');
+    tabTrigger1.setAttribute('aria-selected', 'false');
+    waMessageStaleness.hidden = false;
+    waMessage.hidden = true;
+  });
+
   // WhatsApp screen → Home (the manual-navigation fallback path; Home
   // stays reachable but is no longer the primary entry point)
   btnWaBack.addEventListener('click', function () {
@@ -394,6 +519,7 @@
   // INIT
   // ================================================================
   renderWhatsAppPriceDrop(PRICE_DROP_PRODUCT);
+  renderWhatsAppStaleness(STALENESS_PRODUCT);
   buildWishlistCards();
 
 })();
