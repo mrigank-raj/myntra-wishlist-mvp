@@ -76,9 +76,10 @@ exact same computeVerdict() output and the same card markup as the
 product detail screen (paintVerdictCard() now paints both) — no new
 numbers, no new logic, just the existing verdict surfaced one step
 earlier in the funnel instead of requiring a click-through to see it.
-The greeting name ("Mrigank") is a fixed demo-persona placeholder — there
-is no login system in this prototype, so it is not a claim about real
-user data.
+The greeting name ("Gaurav" — changed from "Mrigank" 2026-09-01, single
+DEMO_USER_NAME constant) is a fixed demo-persona placeholder — there is
+no login system in this prototype, so it is not a claim about real user
+data.
 
 **WhatsApp price-row chip (2026-09-01):** once the verdict card was
 embedded directly below it, the price row's "Save ₹X" chip became
@@ -112,6 +113,32 @@ this project's honest-copy rule; "steal deal" is a stronger, more
 subjective claim than "Verified Low Price" already is, so it's held to
 the same bar. Worth reconsidering if the intent was for it to appear on
 every below-average price.
+
+**Greeting follow-up line (2026-09-01):** "Hi [name]," used to lead
+straight into the verdict card with no transition — felt abrupt/plain.
+Added one line between them: "Good news! This item from your wishlist
+just got a price drop." (static copy, no product name, no numbers — the
+product name is already shown in the bubble's product row above, and the
+numbers belong to the verdict card right below). Went through several
+rounds before landing here:
+- First drafts used vague nouns ("something on your wishlist," "an item")
+  to avoid repeating the product name — user's feedback: this read as
+  generic mass-mail copy, not personalized, despite the casual tone.
+- Tried personalizing via the real product name instead — user's next
+  call: don't name the product here (it's already shown above), but it
+  should still feel personal.
+- Resolution: personalization doesn't require naming the item — it comes
+  from centering the sentence on the user's own action ("your wishlist,"
+  "this item") rather than a generic location/object reference. That's
+  the same underlying lesson as Trigger 2's copywriting principle above,
+  from the other direction: Trigger 2's fix was to stop naming the
+  detected signal; this fix was to stop being vague about whose item it
+  is. Both point at the same thing — specificity about the user's own
+  relationship to the item reads as personal; naming mechanisms or using
+  generic filler both read as templated, just in different ways.
+- Final line is the user's own wording, sentence-cased to match the rest
+  of the message's typography (the rest of the message doesn't use Title
+  Case).
 
 **CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
 to the price-drop hook already shown in the message rather than being a
@@ -190,11 +217,72 @@ concept, real product.
    message, reached only via the Trigger 1 screen's purpose-bar link (or
    back from it). Tapping the message → same product-detail click-through
    as Trigger 1, for the Trigger 2 example product.
-2. **Myntra home screen** (static, unchanged from V1) — still reachable via
-   normal navigation/back button, kept for completeness, not the primary
-   entry point anymore.
-3. **Wishlist screen** (unchanged from V1) — grid of the 10 PRODUCT_DATA
-   items, still reachable via normal navigation.
+2. **Myntra home screen** (static from V1, mostly decorative in this
+   prototype — category tiles, brand cards, banners, bottom-nav tabs
+   aren't wired to anything) — still reachable via normal
+   navigation/back button, kept for completeness, not the primary entry
+   point anymore. **2026-09-01, wishlist icon in this screen's header:**
+   - **Item-count badge — added, then removed same day.** First pass
+     added a small pink circle on the icon showing `PRODUCTS.length`
+     (same convention cart icons use in most fashion apps), read from
+     real data. Fixed the Wishlist screen's own "10 items" header label
+     opportunistically at the same time — it had been hardcoded text
+     with no JS behind it, now reads from the same `PRODUCTS.length`
+     value (this part stayed). The badge itself was then explicitly
+     removed at the user's request ("remove number from wishlist heart
+     icon") — no count is shown on the icon anymore; the wrapper div,
+     CSS rule, DOM ref and INIT-block line were all backed out, not just
+     hidden.
+   - **Nudge arrow — three attempts, the first two were wrong.** Since
+     most of this screen is decorative, clicking anywhere on it other
+     than the wishlist icon shows a brief curved arrow with a "Click on
+     wishlist" label (fades in with a small bounce, auto-hides after
+     ~1.8s) pointing at the icon — a hint toward the one path that's
+     actually built, for anyone clicking around expecting the rest to
+     work.
+     - Attempt 1 had the arrowhead landing over the search bar, nowhere
+       near the icon (confirmed wrong by the user's own screenshot), and
+       had no label at all.
+     - Attempt 2 redesigned the SVG and anchored its own top-right
+       corner to the container's top-right corner. This was verbally
+       asserted here as "lands right on the icon" from screenshot
+       inspection alone — that assertion was wrong. When the user asked
+       directly "is the arrow pointing to wishlist button? you only tell
+       me," precise measurement (via Playwright, `svg.getScreenCTM()` +
+       `.matrixTransform()` on the actual path vertex, compared against
+       the button's real bounding box) showed the tip landing ~9px below
+       the button. **Lesson applied going forward: any claim about exact
+       on-screen positioning gets confirmed with coordinate math before
+       being asserted, not just eyeballed from a screenshot.**
+     - Attempt 3 (final, in place now) solved backward from the actual
+       goal: took the wishlist button's real bounding box, picked a
+       target screen point at its center, then used
+       `svg.getScreenCTM().inverse().matrixTransform()` to compute the
+       exact local SVG coordinates needed for the path's tip to land
+       there, and rewrote the path with those coordinates (viewBox
+       extended to negative y, `overflow: visible` added so the tip can
+       draw above the SVG's own box). Re-measured the same way afterward
+       — tip lands within ~1-3px of the button's center, confirmed both
+       by the CTM math and by screenshot. Also added the "Click on
+       wishlist" label (missing in attempt 1), positioned to clear the
+       nav-tabs row below it.
+     - Note this partially reverses an earlier V1→V2 call: the wishlist
+       icon's wrapper div was originally built for an onboarding
+       highlight, then explicitly turned off when WhatsApp became the
+       primary entry point in V2 ("no longer onboarding-highlighted" —
+       see the wrapper's own comment in index.html). This request brings
+       a nudge back, just as a click-triggered arrow rather than a
+       highlight ring.
+3. **Wishlist screen** — grid of the 10 PRODUCT_DATA items, still
+   reachable via normal navigation. **2026-09-01:** each card now shows a
+   "Price Drop!" badge (top-left, mirrors the heart icon's top-right
+   placement) when `current < average` for that product — real
+   arithmetic on real data, same condition the verdict logic already
+   uses. Deliberately covers both below-average zones here (Verified Low
+   Price and the milder Price Drop zone) — unlike the WhatsApp/detail
+   "Steal Deal" sticker, which is scoped to the strongest zone only, this
+   badge's condition was given explicitly by the user as just "current
+   price is less than average price," so it isn't narrowed further.
 4. **Product detail screen** (unchanged from V1 — this is still the actual
    feature payoff): product image, name, current price, the price-context
    card (see PRODUCT DETAIL SCREEN / VERDICT LOGIC below), Add to Cart.

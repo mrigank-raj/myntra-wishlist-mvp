@@ -124,6 +124,8 @@
   var screenWishlist = document.getElementById('screen-wishlist');
   var screenProduct = document.getElementById('screen-product');
   var btnWishlist = document.getElementById('btn-wishlist');
+  var wishlistNudgeWrapper = document.getElementById('wishlist-nudge-wrapper');
+  var wishlistNudgeArrow = document.getElementById('wishlist-nudge-arrow');
   var btnBackHome = document.getElementById('btn-back-home');
   var btnBackWishlist = document.getElementById('btn-back-wishlist');
   var btnWaBack = document.getElementById('btn-wa-back');
@@ -131,6 +133,7 @@
   var linkToTrigger2 = document.getElementById('link-to-trigger2');
   var linkToTrigger1 = document.getElementById('link-to-trigger1');
   var wishlistGrid = document.getElementById('wishlist-grid');
+  var wishlistCountLabel = document.getElementById('wishlist-count');
 
   // WhatsApp mockup DOM refs (Trigger 1 — Price Drop)
   var waMessage = document.getElementById('wa-message');
@@ -299,7 +302,7 @@
   // Demo persona name for the WhatsApp greeting only — there is no login
   // system in this prototype, so this is a fixed display placeholder,
   // not a claim about real user data.
-  var DEMO_USER_NAME = 'Mrigank';
+  var DEMO_USER_NAME = 'Gaurav';
 
   // ================================================================
   // WHATSAPP MOCKUP — TRIGGER 1: PRICE DROP
@@ -440,9 +443,22 @@
       card.className = 'product-card';
       card.setAttribute('data-product-id', product.id);
 
+      // 2026-09-01: "Price Drop!" badge on every card where current is
+      // genuinely below average — real arithmetic on real PRODUCT_DATA,
+      // same condition the verdict logic already uses (pctDiff < 0).
+      // Deliberately covers BOTH below-average zones here (unlike the
+      // WhatsApp/detail "Steal Deal" sticker, which is Verified-Low-Price
+      // only) — the user's own stated condition for this badge is just
+      // "current price is less than average price," so it's not scoped
+      // any tighter than that.
+      var priceDropBadge = product.current < product.average
+        ? '<div class="card-price-drop-badge">Price Drop!</div>'
+        : '';
+
       card.innerHTML =
         '<div class="product-card-image" style="--img-bg: ' + product.imgBg + ';">' +
           '<img class="product-real-image" src="' + product.image + '" alt="' + product.name + '">' +
+          priceDropBadge +
           '<div class="card-heart">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF3F6C" stroke="#FF3F6C" stroke-width="2">' +
               '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
@@ -537,6 +553,25 @@
     switchScreen(screenHome, screenWishlist, false);
   });
 
+  // Home-screen nudge (2026-09-01) — most of the home screen is
+  // decorative in this prototype (Buy Now / category tiles / brand
+  // cards etc. aren't wired to anything). Clicking anywhere on this
+  // screen other than the wishlist icon shows a brief curved arrow
+  // pointing at it, nudging toward the one path that's actually built.
+  var wishlistNudgeTimer = null;
+  screenHome.addEventListener('click', function (e) {
+    if (wishlistNudgeWrapper.contains(e.target)) {
+      return; // real click on the wishlist icon — nothing to nudge
+    }
+    wishlistNudgeArrow.classList.remove('is-visible');
+    void wishlistNudgeArrow.offsetWidth; // restart the animation if it's already mid-play
+    wishlistNudgeArrow.classList.add('is-visible');
+    clearTimeout(wishlistNudgeTimer);
+    wishlistNudgeTimer = setTimeout(function () {
+      wishlistNudgeArrow.classList.remove('is-visible');
+    }, 1800);
+  });
+
   // Wishlist → Home
   btnBackHome.addEventListener('click', function () {
     switchScreen(screenWishlist, screenHome, true);
@@ -553,5 +588,8 @@
   renderWhatsAppPriceDrop(PRICE_DROP_PRODUCT);
   renderWhatsAppStaleness(STALENESS_PRODUCT);
   buildWishlistCards();
+  // Reads from PRODUCTS.length directly — same pattern as the rest of
+  // this file, not hardcoded.
+  wishlistCountLabel.textContent = PRODUCTS.length + ' items';
 
 })();

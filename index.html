@@ -63,6 +63,7 @@
             </div>
           </div>
           <p class="wa-bubble-greeting" id="wa-bubble-greeting">Hi there,</p>
+          <p class="wa-bubble-text">Good news! This item from your wishlist just got a price drop.</p>
           <div class="verdict-card wa-verdict-card" id="wa-verdict-card">
             <div class="verdict-card-row">
               <span class="verdict-card-badge" id="wa-verdict-badge">
@@ -175,11 +176,23 @@
           </button>
 
           <!-- WISHLIST ICON — reachable via normal navigation; WhatsApp is the
-               primary entry point in V2, so this is no longer onboarding-highlighted -->
+               primary entry point in V2. 2026-09-01: re-added a nudge here
+               (arrow, not a highlight ring) for clicks elsewhere on this
+               screen — see wishlist-nudge-arrow and its app.js wiring.
+               No item-count badge (removed same day) — see Project_Contexr.md. -->
           <div class="wishlist-nudge-wrapper" id="wishlist-nudge-wrapper">
             <button class="icon-btn wishlist-btn" id="btn-wishlist" aria-label="Wishlist">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#282C3F" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
+            <div class="wishlist-nudge-arrow" id="wishlist-nudge-arrow" aria-hidden="true">
+              <span class="wishlist-nudge-label">Click on wishlist</span>
+              <!-- viewBox extends above y=0 (negative) and overflow:visible in CSS
+                   so the tip can reach up into the icon itself, not just its own box. -->
+              <svg class="wishlist-nudge-svg" width="54" height="62" viewBox="0 -22 54 62" fill="none">
+                <path d="M6 56 C 0 20, 2 -20, 27 -45" stroke="#FF3F6C" stroke-width="3" stroke-linecap="round"/>
+                <path d="M16 -49 L27 -45 L25 -33" stroke="#FF3F6C" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
           </div>
 
           <button class="icon-btn" aria-label="Bag" disabled>
