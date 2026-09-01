@@ -149,6 +149,62 @@ visual weight as the "Price Drop" badge next to it, visible without a
 hover state. Copy/behavior unchanged. Same fix applied to its mirror,
 "See Trigger 1" on the Trigger 2 screen.
 
+**"Near-lowest" urgency signal (2026-09-01) — went through two passes.**
+Raised by the user: the best case (a genuine price drop) should create
+urgency, ethically — no fake countdowns, no fabricated stock/demand
+claims, no predicting where price goes next (all already rejected above
+for the same reasons). The lever used: a real, backward-looking fact
+already in PRODUCT_DATA — how close `current` is to the recorded
+`lowest`. That's a verifiable historical comparison, not a forecast, so
+it doesn't fall into the same category as the rejected fake-urgency copy.
+
+- **First pass:** fired only on an exact match (`current === lowest`,
+  true for exactly one product, Nautica Chinos) and showed as a
+  color-swapped "All-Time Low" sticker (deep red) in place of "Steal
+  Deal". The user's follow-up correction: (a) "close to lowest" should
+  count too, not just an exact match — reasoning: a price close to the
+  floor is still a good deal worth the same treatment; (b) no sticker —
+  the urgency should live in the verdict card's wording instead.
+- **Final version:** `nearLowest` = any genuine savings zone (Price
+  Drop or Verified Low Price, i.e. `pctDiff < 0`) AND `current` within
+  20% of `lowest` (user-set threshold). At 20%, this currently fires for
+  4 of the catalog's below-average products (Nautica Chinos 0% from
+  lowest, Down Jacket ~5%, Slim Fit Polo ~12%, Hoodie ~18%) — noted to
+  the user that this is most of the savings-zone catalog, not a rare
+  case, and they kept the number anyway.
+- No sticker anymore — the "Steal Deal" sticker is back to its original,
+  unconditional strongest-zone-only behavior. The urgency is one
+  appended clause on the verdict card's "You save ₹X on this item."
+  line: **"It's rarely been priced this low."** — the user's own wording
+  ("You save ₹X on this item. One of the lowest price it has ever
+  been."), reframed into 5 grammar-fixed variants, this one chosen.
+
+**"Typical Price" given a real savings framing vs. its highest price
+(2026-09-01).** Raised by the user: Typical Price cards were pure
+neutral messaging — no lever pulling toward the conversion metric at
+all, a "lost potential." Went through a copy round: first drafts
+compared current price to `highest` directly in the sentence ("₹X less
+than its highest price") — rejected, wanted something that didn't
+resemble that skeleton. Landed on the user's own structure instead: the
+main line states a ₹ savings amount exactly like the real savings
+zones ("You save ₹X on this item."), with a caption underneath in
+small text disclosing the comparison basis ("Based on its highest
+recorded price of ₹Y") — reuses the same main-text-plus-caption pattern
+already used everywhere else in the card, and the caption keeps this
+claim from being confused with the real average-based "You save" claim
+used in the Verified Low Price/Price Drop zones.
+- Only fires when the gap to `highest` is meaningful — at least 10% of
+  the highest price. Without this floor, KALLOS Lipsticks (current
+  ₹7,502 vs. highest ₹7,504, a ₹2 gap) would get a hollow claim; it
+  correctly falls back to the original plain "Right around its typical
+  average of ₹X" / "Usually sells for ₹X" pairing instead. The other
+  four Typical Price products (Cetaphil, KEF Headphones, Titan Perfume,
+  Floral Shirt) all clear the floor and get the new framing.
+- Heading stays "Typical Price" — not changed, only the body text/
+  caption. Worth a second look later: "Typical Price" as a heading over
+  a "You save ₹X" line reads slightly inconsistent, but that wasn't
+  part of what was asked this round.
+
 **CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
 to the price-drop hook already shown in the message rather than being a
 generic navigation label. Considered and explicitly rejected for CTR:

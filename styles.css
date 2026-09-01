@@ -859,6 +859,9 @@ body {
   white-space: nowrap;
 }
 .wa-steal-sticker[hidden] { display: none; }
+/* Briefly had an "All-Time Low" color variant here (2026-09-01) — reverted
+   the same day; that urgency now lives in the verdict card's text
+   instead (computeVerdict()'s `nearLowest`), not a second sticker. */
 
 .wa-bubble-greeting {
   font-size: 0.82rem;

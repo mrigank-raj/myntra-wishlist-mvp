@@ -263,6 +263,18 @@
   function computeVerdict(product) {
     var pctDiff = ((product.current - product.average) / product.average) * 100;
     var zoneClass, icon, heading, text;
+    // 2026-09-01: real, backward-looking urgency signal for any genuine
+    // savings zone (pctDiff < 0) — true when current price is within 20%
+    // of the lowest ever recorded for this item (both real PRODUCT_DATA
+    // fields, threshold set by the user). This is a historical
+    // comparison, not a prediction about where price goes next —
+    // deliberately different from the "price may not last"/fake-urgency
+    // copy already rejected for the CTA (see Project_Contexr.md).
+    // Revised same day from a stricter current===lowest exact match (and
+    // a colored sticker) to this — the user wanted "close to lowest" to
+    // count too, and wanted the urgency carried in the verdict text
+    // instead of a sticker.
+    var nearLowest = pctDiff < 0 && product.current <= product.lowest * 1.2;
 
     if (pctDiff < -15) {
       zoneClass = 'zone-green';
@@ -276,13 +288,13 @@
       heading = 'Price Drop';
       text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
     } else if (pctDiff <= 15) {
-      // At or above average — no savings to report, so this is the one place
-      // we do name the average, since there's no ₹ amount to lead with instead.
+      // At or above average — no savings to report vs. average, so this is
+      // one of two places we name a reference price directly instead of a
+      // ₹ savings amount (see the highest-price branch just below).
       // 2026-09-01: given a positive (green/check) treatment rather than
       // gray/neutral — this price isn't a warning, it's confirmed fair,
       // so it earns a reassuring tone. Distinct green hue from the pink
-      // savings zones above, so it doesn't overstate as an actual deal —
-      // copy is unchanged, still says "typical average", not "you save".
+      // savings zones above, so it doesn't overstate as an actual deal.
       zoneClass = 'zone-typical';
       icon = 'check';
       heading = 'Typical Price';
@@ -297,13 +309,42 @@
       text = formatPrice(product.current - product.average) + ' above its typical average of ' + formatPrice(product.average) + '.';
     }
 
+    // Appends to either savings zone's text — one shared clause instead
+    // of duplicating it in both branches above. Final wording is the
+    // user's pick from 5 drafted variants (2026-09-01).
+    if (nearLowest) {
+      text += " It's rarely been priced this low.";
+    }
+
+    // 2026-09-01: "Typical Price" items have no savings vs. average to
+    // report, but there IS a real, honest number available: the gap to
+    // the item's own highest recorded price. Only worth stating when
+    // that gap is meaningful — for KALLOS Lipsticks (current ₹7,502 vs.
+    // highest ₹7,504) it would be a hollow ₹2 claim, so this only fires
+    // when the gap is at least 10% of the highest price; below that, the
+    // plain "right around average" line stays. Per the user's specified
+    // structure: the main line states a ₹ savings amount (same phrasing
+    // as the real savings zones), and a caption underneath discloses the
+    // comparison is vs. the highest price, not average — so it can't be
+    // mistaken for the real average-based "You save" claim used above.
+    var highestGap = zoneClass === 'zone-typical' ? product.highest - product.current : 0;
+    var highestGapMeaningful = zoneClass === 'zone-typical' && highestGap >= product.highest * 0.10;
+    if (highestGapMeaningful) {
+      text = 'You save ' + formatPrice(highestGap) + ' on this item.';
+    }
+
     // 2026-09-01: no "Usually sells for ₹X" caption for the Above Average
-    // zone specifically — the average is already stated once in `text`
-    // above ("₹X above its typical average of ₹Y"), so the caption would
-    // just repeat the same number a second time on this one card. The
-    // other zones keep the caption (there it's not a repeat — those
-    // zones' `text` states a savings amount, not the average itself).
-    var caption = pctDiff > 15 ? '' : 'Usually sells for ' + formatPrice(product.average);
+    // zone — the average is already stated once in `text` above ("₹X
+    // above its typical average of ₹Y"), so the caption would just
+    // repeat the same number a second time on this one card.
+    var caption;
+    if (pctDiff > 15) {
+      caption = '';
+    } else if (highestGapMeaningful) {
+      caption = 'Based on its highest recorded price of ' + formatPrice(product.highest);
+    } else {
+      caption = 'Usually sells for ' + formatPrice(product.average);
+    }
 
     return {
       pctDiff: pctDiff,
@@ -317,7 +358,8 @@
       // is computed against, just stated once here instead of in a
       // separate price-row chip. Empty for the Above Average zone — see
       // note above.
-      caption: caption
+      caption: caption,
+      nearLowest: nearLowest
     };
   }
 
@@ -382,7 +424,10 @@
     // the strongest zone only (Verified Low Price, >15% below average) —
     // calling a merely-below-average price a "steal" would overstate the
     // milder Price Drop zone, so the sticker only shows where the claim
-    // actually holds.
+    // actually holds. (2026-09-01: briefly had a color/label-swapped
+    // "All-Time Low" variant here — the user wanted the urgency carried
+    // in the verdict card's text instead, not a second sticker, see
+    // computeVerdict()'s `nearLowest`.)
     waStealSticker.hidden = verdict.zoneClass !== 'zone-green';
 
     paintVerdictCard({
