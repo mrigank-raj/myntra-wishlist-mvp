@@ -11,11 +11,14 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- ======================== SCREEN 1: WHATSAPP MOCKUP (Trigger 1 — Price Drop, Trigger 2 — Staleness Reminder) ======================== -->
-  <!-- Primary entry point for the demo. The tab strip below is a prototype
-       control (not part of the simulated WhatsApp UI) that switches which
-       example message is shown — a real user would only ever receive one
-       or the other, never see a picker. -->
+  <!-- ======================== SCREEN 1: WHATSAPP MOCKUP — TRIGGER 1 (PRICE DROP) ======================== -->
+  <!-- Primary entry point for the demo. 2026-09-01: split from a single
+       screen with a same-screen toggle into two separate real screens —
+       each trigger is its own full screen now, navigated the same way
+       every other screen in this app is (switchScreen), rather than a
+       show/hide toggle within one DOM. The purpose badge below the header
+       is a prototype-only label (not part of the simulated WhatsApp UI),
+       naming which trigger this screen demonstrates. -->
   <div id="screen-whatsapp" class="screen active wa-screen">
     <header class="wa-header">
       <button class="back-btn wa-back-btn" id="btn-wa-back" aria-label="Open Myntra">
@@ -38,9 +41,9 @@
       </div>
     </header>
 
-    <div class="wa-trigger-tabs" role="tablist" aria-label="Preview which trigger message Myntra would send">
-      <button class="wa-trigger-tab active" id="tab-trigger-1" role="tab" aria-selected="true">Trigger 1: Price Drop</button>
-      <button class="wa-trigger-tab" id="tab-trigger-2" role="tab" aria-selected="false">Trigger 2: Reminder</button>
+    <div class="wa-purpose-bar">
+      <span class="wa-purpose-badge">Price Drop</span>
+      <button class="wa-purpose-link" id="link-to-trigger2">See Trigger 2: Reminder &rarr;</button>
     </div>
 
     <div class="wa-chat-body">
@@ -78,19 +81,53 @@
           <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
       </div>
+    </div>
 
-      <!-- Trigger 2 — Wishlist Nudge (2026-09-01 rewrite: behavior-triggered,
-           not time-based). Fires when the user is actively browsing the
-           same category as a wishlisted item — a relevance signal, not an
-           elapsed-time countdown. No price data shown (this trigger
-           carries no price signal, per spec). Copy deliberately does NOT
-           say "you've been browsing X" — naming the detected category
-           back to the user like a mail-merge variable is exactly what
-           makes a message feel automated; instead it references the
-           shopper's ongoing search ("still hunting for the right shirt")
-           and the specific saved item, which reads as relevant without
-           announcing the tracking mechanism. See Project_Contexr.md. -->
-      <div class="wa-message-wrapper" id="wa-message-staleness" tabindex="0" role="button" aria-label="Open item on Myntra" hidden>
+    <div class="wa-input-bar">
+      <div class="wa-input-fake">Message</div>
+      <div class="wa-mic-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 1B: WHATSAPP MOCKUP — TRIGGER 2 (REMINDER) ======================== -->
+  <!-- Behavior-triggered wishlist nudge (2026-09-01 rewrite — see
+       Project_Contexr.md): fires on active browsing of a related
+       category, not on elapsed time. No price data shown — this trigger
+       carries no price signal, so price context here would misrepresent
+       why it was sent. -->
+  <div id="screen-whatsapp-2" class="screen wa-screen">
+    <header class="wa-header">
+      <button class="back-btn wa-back-btn" id="btn-wa-back-2" aria-label="Back to Trigger 1">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <div class="wa-contact">
+        <div class="wa-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="wa-contact-info">
+          <span class="wa-contact-name">Myntra
+            <svg class="wa-verified-badge" width="13" height="13" viewBox="0 0 24 24" fill="#53BDEB"><path d="M12 2l2.4 2.2 3.2-.6.9 3.1 3.1.9-.6 3.2L23 12l-2.2 2.4.6 3.2-3.1.9-.9 3.1-3.2-.6L12 23l-2.4-2.2-3.2.6-.9-3.1-3.1-.9.6-3.2L1 12l2.2-2.4-.6-3.2 3.1-.9.9-3.1 3.2.6z"/><path d="M9 12.5l2 2 4-4.5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="wa-contact-sub">Business Account</span>
+        </div>
+      </div>
+      <div class="wa-header-icons">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+    </header>
+
+    <div class="wa-purpose-bar">
+      <span class="wa-purpose-badge">Reminder</span>
+      <button class="wa-purpose-link" id="link-to-trigger1">&larr; See Trigger 1: Price Drop</button>
+    </div>
+
+    <div class="wa-chat-body">
+      <div class="wa-date-chip"><span>Today</span></div>
+
+      <div class="wa-message-wrapper" id="wa-message-staleness" tabindex="0" role="button" aria-label="Open item on Myntra">
         <div class="wa-bubble">
           <div class="wa-bubble-product">
             <div class="wa-bubble-image" id="wa-bubble-image-2"></div>

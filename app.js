@@ -119,6 +119,7 @@
   // DOM REFS
   // ================================================================
   var screenWhatsapp = document.getElementById('screen-whatsapp');
+  var screenWhatsapp2 = document.getElementById('screen-whatsapp-2');
   var screenHome = document.getElementById('screen-home');
   var screenWishlist = document.getElementById('screen-wishlist');
   var screenProduct = document.getElementById('screen-product');
@@ -126,6 +127,9 @@
   var btnBackHome = document.getElementById('btn-back-home');
   var btnBackWishlist = document.getElementById('btn-back-wishlist');
   var btnWaBack = document.getElementById('btn-wa-back');
+  var btnWaBack2 = document.getElementById('btn-wa-back-2');
+  var linkToTrigger2 = document.getElementById('link-to-trigger2');
+  var linkToTrigger1 = document.getElementById('link-to-trigger1');
   var wishlistGrid = document.getElementById('wishlist-grid');
 
   // WhatsApp mockup DOM refs (Trigger 1 — Price Drop)
@@ -146,8 +150,6 @@
   var waBubbleGreeting2 = document.getElementById('wa-bubble-greeting-2');
   var waBubbleImage2 = document.getElementById('wa-bubble-image-2');
   var waBubbleName2 = document.getElementById('wa-bubble-name-2');
-  var tabTrigger1 = document.getElementById('tab-trigger-1');
-  var tabTrigger2 = document.getElementById('tab-trigger-2');
 
   // Product detail DOM refs
   var productDetailTitle = document.getElementById('product-detail-title');
@@ -463,10 +465,10 @@
   });
 
   // WhatsApp message (Trigger 2) → Product Detail, same pattern as
-  // Trigger 1 but for the staleness-reminder example product.
+  // Trigger 1 but for the wishlist-nudge example product.
   waMessageStaleness.addEventListener('click', function () {
     renderProductDetail(STALENESS_PRODUCT);
-    switchScreen(screenWhatsapp, screenProduct, false);
+    switchScreen(screenWhatsapp2, screenProduct, false);
   });
   waMessageStaleness.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -475,29 +477,27 @@
     }
   });
 
-  // Trigger preview tabs — prototype-only control, switches which example
-  // message is visible. Not part of the simulated WhatsApp UI.
-  tabTrigger1.addEventListener('click', function () {
-    tabTrigger1.classList.add('active');
-    tabTrigger1.setAttribute('aria-selected', 'true');
-    tabTrigger2.classList.remove('active');
-    tabTrigger2.setAttribute('aria-selected', 'false');
-    waMessage.hidden = false;
-    waMessageStaleness.hidden = true;
+  // Trigger 1 screen ↔ Trigger 2 screen — 2026-09-01: replaces the old
+  // same-screen hidden-toggle tabs. Each trigger is now its own real
+  // screen, reached the same way every other screen transition in this
+  // app works (switchScreen), via the purpose-bar link.
+  linkToTrigger2.addEventListener('click', function () {
+    switchScreen(screenWhatsapp, screenWhatsapp2, false);
   });
-  tabTrigger2.addEventListener('click', function () {
-    tabTrigger2.classList.add('active');
-    tabTrigger2.setAttribute('aria-selected', 'true');
-    tabTrigger1.classList.remove('active');
-    tabTrigger1.setAttribute('aria-selected', 'false');
-    waMessageStaleness.hidden = false;
-    waMessage.hidden = true;
+  linkToTrigger1.addEventListener('click', function () {
+    switchScreen(screenWhatsapp2, screenWhatsapp, true);
   });
 
-  // WhatsApp screen → Home (the manual-navigation fallback path; Home
-  // stays reachable but is no longer the primary entry point)
+  // WhatsApp Trigger 1 screen → Home (the manual-navigation fallback path;
+  // Home stays reachable but is no longer the primary entry point)
   btnWaBack.addEventListener('click', function () {
     switchScreen(screenWhatsapp, screenHome, false);
+  });
+
+  // WhatsApp Trigger 2 screen → back to Trigger 1 (its only entry point
+  // is from Trigger 1's purpose-bar link, so back returns there)
+  btnWaBack2.addEventListener('click', function () {
+    switchScreen(screenWhatsapp2, screenWhatsapp, true);
   });
 
   // Home → Wishlist

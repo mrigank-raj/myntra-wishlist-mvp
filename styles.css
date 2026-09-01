@@ -497,33 +497,51 @@ body {
   padding-right: 4px;
 }
 
-/* Prototype-only control — lets you preview either trigger message.
-   Deliberately styled apart from the WhatsApp chrome above (Myntra pink,
-   not WhatsApp green) so it doesn't read as part of the simulated app. */
-.wa-trigger-tabs {
+/* Prototype-only label + cross-link — 2026-09-01: replaces the old
+   same-screen preview tabs now that Trigger 1 and Trigger 2 are two
+   separate real screens. Deliberately styled apart from the WhatsApp
+   chrome above (Myntra pink, not WhatsApp green) so it doesn't read as
+   part of the simulated app — same badge language as the flow-track
+   breadcrumb in the artifact wrapper, so the two feel like one system. */
+.wa-purpose-bar {
   display: flex;
-  gap: 6px;
-  padding: 8px 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
   background: #FFFFFF;
   border-bottom: 1px solid var(--myntra-border);
 }
-.wa-trigger-tab {
-  flex: 1;
-  border: 1.5px solid var(--myntra-border);
-  background: #FFFFFF;
+.wa-purpose-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--myntra-pink);
+  background: #FFECF1;
+  border: 1px solid #FFD2DE;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.wa-purpose-link {
+  border: none;
+  background: none;
   color: var(--myntra-gray);
   font-family: inherit;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 7px 6px;
-  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 4px 2px;
   cursor: pointer;
-  transition: all 0.15s;
+  text-align: right;
+  transition: color 0.15s;
 }
-.wa-trigger-tab.active {
-  background: var(--myntra-pink);
-  border-color: var(--myntra-pink);
-  color: #FFFFFF;
+.wa-purpose-link:hover,
+.wa-purpose-link:focus-visible {
+  color: var(--myntra-pink);
 }
 
 .wa-chat-body {

@@ -110,10 +110,21 @@ tracking variable is what makes a message read as automated/mail-merged.
 Reference the shopper's ongoing search naturally instead, and let the
 specific saved item (shown in the message itself) carry the relevance.
 
-**Built.** The WhatsApp screen has a prototype-only tab strip
-("Trigger 1: Price Drop" / "Trigger 2: Reminder") that switches which
-example message is shown — a real user would only ever receive one,
-never see a picker; the tabs exist for this demo only. Trigger 2's
+**Built.** Trigger 1 and Trigger 2 are each their own real screen
+(`#screen-whatsapp` and `#screen-whatsapp-2`), navigated the same way
+every other screen in this app is — `switchScreen`, not a show/hide
+toggle. **2026-09-01 revision:** this replaced an earlier same-screen
+version where both messages lived in one DOM and a prototype-only tab
+strip toggled which was visible — that approach caused a real bug on
+the deployed site (a CSS cascade issue meant both messages rendered
+stacked at once) and, separately, didn't match what the user asked for:
+"I dint want both the messages on the same screen make screen 1 and
+screen 2 with there purpose stated in one word." Each screen now has a
+small purpose badge under the header (`Price Drop` / `Reminder` — one
+word each, styled like the artifact wrapper's flow-track breadcrumb
+badges) plus a link to jump to the other trigger's screen. A real user
+would only ever receive one message, never see either the badge or the
+cross-link — both are prototype-only, for demo navigation. Trigger 2's
 message: product image/name (no price row, no verdict card), "Hi
 [name]," greeting, "Still hunting for the right shirt? This one's
 already waiting in your wishlist.", "Reply STOP to unsubscribe", then a
@@ -125,11 +136,16 @@ distinct; there is no shoe product in PRODUCT_DATA, so "shirt" is used
 in the copy instead of the user's original "shoes" example — same
 concept, real product.
 
-## Flow (5 screens)
-1. **WhatsApp message mockup screen** — shows either a Trigger 1 or Trigger
-   2 message (see above). Tapping it → goes to screen 4 (that product's
-   detail page), skipping the home/wishlist screens entirely — this
-   simulates being pulled back into the app from outside it.
+## Flow (6 screens)
+1. **WhatsApp Trigger 1 screen** (`#screen-whatsapp`, default entry point)
+   — Price Drop message. Tapping the message → goes to the product's
+   detail screen directly, skipping home/wishlist — simulates being
+   pulled back into the app from outside it. The purpose-bar link jumps
+   to screen 1b.
+1b. **WhatsApp Trigger 2 screen** (`#screen-whatsapp-2`) — Reminder
+   message, reached only via the Trigger 1 screen's purpose-bar link (or
+   back from it). Tapping the message → same product-detail click-through
+   as Trigger 1, for the Trigger 2 example product.
 2. **Myntra home screen** (static, unchanged from V1) — still reachable via
    normal navigation/back button, kept for completeness, not the primary
    entry point anymore.
@@ -139,18 +155,19 @@ concept, real product.
    feature payoff): product image, name, current price, the price-context
    card (see PRODUCT DETAIL SCREEN / VERDICT LOGIC below), Add to Cart.
 5. (V1's animated home-screen nudge remains as-is for the manual-navigation
-   path; the WhatsApp screen is the new primary entry point for the demo.)
+   path; the WhatsApp Trigger 1 screen is the new primary entry point for
+   the demo.)
 
 ## PRODUCT DETAIL SCREEN — still the actual feature
 - Product image, name, current price
   - When current is genuinely below average: shown with the average
-    struck through and a "Save ₹X" chip (X = Average − Current). No
-    "average" or "% below avg" label anywhere in this row — per the
-    user's explicit call (2026-08-31), the customer-facing copy should
-    lead with the ₹ amount saved, not disclose that it's an
-    average-based comparison. The struck-through price alone reads as
-    a normal "was" price, same as any e-commerce markdown, without
-    naming the stat behind it.
+    struck through and a "Usually sells for ₹X" note (X = average).
+    2026-09-01: this used to be a "Save ₹X" chip, but that repeated the
+    verdict card's "You save ₹X on this item." line right below it —
+    same number stated twice, per the user's explicit call. Now shows
+    the reference price instead, so the two elements say different
+    things. The struck-through price alone still reads as a normal
+    "was" price, same as any e-commerce markdown.
 - Price-context card ("Verified Low Price" / price-confidence content —
   see VERDICT LOGIC). This is a compact bordered card (badge icon +
   one-line heading + one factual sentence + a muted "Based on this
