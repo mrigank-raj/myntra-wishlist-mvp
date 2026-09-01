@@ -120,6 +120,12 @@
   // ================================================================
   var screenWhatsapp = document.getElementById('screen-whatsapp');
   var screenWhatsapp2 = document.getElementById('screen-whatsapp-2');
+  var screenWhatsappChats = document.getElementById('screen-whatsapp-chats');
+  var screenNextleap = document.getElementById('screen-nextleap');
+  var chatRowMyntra = document.getElementById('chat-row-myntra');
+  var chatRowNextleap = document.getElementById('chat-row-nextleap');
+  var btnNextleapBack = document.getElementById('btn-nextleap-back');
+  var linkOpenMyntraApp = document.getElementById('link-open-myntra-app');
   var screenHome = document.getElementById('screen-home');
   var screenWishlist = document.getElementById('screen-wishlist');
   var screenProduct = document.getElementById('screen-product');
@@ -218,7 +224,21 @@
   //   < -15%      → "Verified Low Price"  (pink/green zone)
   //   -15% to 0%  → "Price Drop"          (pink/green zone, milder)
   //   0% to +15%  → "Typical Price"       (neutral zone)
-  //   > +15%      → "Above Average Price" (caution zone)
+  //   > +15%      → "Above Average Price" (neutral zone too, as of
+  //                 2026-09-01 — was a distinct amber "caution" zone;
+  //                 downgraded to the same gray/info treatment as
+  //                 Typical Price. Reasoning: the amber+up-arrow read as
+  //                 a warning right above Add to Cart, with no
+  //                 equivalent softener (no strikethrough price) the way
+  //                 below-average items get. Copy stays factual and
+  //                 unchanged — only the visual alarm level changed, not
+  //                 the disclosure. See PROJECT_CONTEXT.md for the fuller
+  //                 discussion (rejected: removing the card outright —
+  //                 that would make disclosure conditional on good news,
+  //                 which conflicts with this project's honest-price
+  //                 thesis; rejected: inventing a "higher demand"
+  //                 justification — no demand data exists in
+  //                 PRODUCT_DATA, so that would be fabricated).
   //
   // 2026-08-31: the two "below average" zones now lead with the ₹ savings
   // amount and never say "average" — per the user's explicit call that the
@@ -235,8 +255,9 @@
   // ================================================================
   var VERDICT_ICONS = {
     check: '<polyline points="4 12 9 17 20 6"/>',
-    info: '<circle cx="12" cy="7.4" r="1.3" fill="#fff" stroke="none"/><line x1="12" y1="11" x2="12" y2="16.5"/>',
-    up: '<line x1="12" y1="18" x2="12" y2="6"/><polyline points="6 12 12 6 18 12"/>'
+    info: '<circle cx="12" cy="7.4" r="1.3" fill="#fff" stroke="none"/><line x1="12" y1="11" x2="12" y2="16.5"/>'
+    // 'up' (amber caution arrow) removed 2026-09-01 — Above Average Price
+    // no longer uses a distinct caution zone/icon, see VERDICT LOGIC above.
   };
 
   function computeVerdict(product) {
@@ -256,17 +277,33 @@
       text = 'You save ' + formatPrice(product.average - product.current) + ' on this item.';
     } else if (pctDiff <= 15) {
       // At or above average — no savings to report, so this is the one place
-      // we do name the average, since there's no ₹ amount to lead with instead
-      zoneClass = 'zone-neutral';
-      icon = 'info';
+      // we do name the average, since there's no ₹ amount to lead with instead.
+      // 2026-09-01: given a positive (green/check) treatment rather than
+      // gray/neutral — this price isn't a warning, it's confirmed fair,
+      // so it earns a reassuring tone. Distinct green hue from the pink
+      // savings zones above, so it doesn't overstate as an actual deal —
+      // copy is unchanged, still says "typical average", not "you save".
+      zoneClass = 'zone-typical';
+      icon = 'check';
       heading = 'Typical Price';
       text = 'Right around its typical average of ' + formatPrice(product.average) + '.';
     } else {
-      zoneClass = 'zone-caution';
-      icon = 'up';
+      // Neutral gray/info treatment — still discloses the item is priced
+      // above its own average, just without the amber "warning" framing.
+      // See note above (2026-09-01 change from a distinct caution zone).
+      zoneClass = 'zone-neutral';
+      icon = 'info';
       heading = 'Above Average Price';
       text = formatPrice(product.current - product.average) + ' above its typical average of ' + formatPrice(product.average) + '.';
     }
+
+    // 2026-09-01: no "Usually sells for ₹X" caption for the Above Average
+    // zone specifically — the average is already stated once in `text`
+    // above ("₹X above its typical average of ₹Y"), so the caption would
+    // just repeat the same number a second time on this one card. The
+    // other zones keep the caption (there it's not a repeat — those
+    // zones' `text` states a savings amount, not the average itself).
+    var caption = pctDiff > 15 ? '' : 'Usually sells for ' + formatPrice(product.average);
 
     return {
       pctDiff: pctDiff,
@@ -278,8 +315,9 @@
       // item's own price history." line. Now shows the reference average
       // instead, at the user's request — same average the verdict itself
       // is computed against, just stated once here instead of in a
-      // separate price-row chip.
-      caption: 'Usually sells for ' + formatPrice(product.average)
+      // separate price-row chip. Empty for the Above Average zone — see
+      // note above.
+      caption: caption
     };
   }
 
@@ -296,7 +334,15 @@
     refs.icon.innerHTML = VERDICT_ICONS[verdict.icon];
     refs.heading.textContent = verdict.heading;
     refs.text.textContent = verdict.text;
-    refs.caption.textContent = verdict.caption;
+    // Empty caption (Above Average zone) — hide the line entirely rather
+    // than paint blank text into it.
+    if (verdict.caption) {
+      refs.caption.textContent = verdict.caption;
+      refs.caption.hidden = false;
+    } else {
+      refs.caption.textContent = '';
+      refs.caption.hidden = true;
+    }
   }
 
   // Demo persona name for the WhatsApp greeting only — there is no login
@@ -371,13 +417,22 @@
   // Copy note: deliberately does not say "you've been browsing X" —
   // echoing the detected category back like a mail-merge variable is
   // what makes a message read as automated. The message references the
-  // shopper's ongoing search instead ("still hunting for the right
-  // shirt") and the specific saved item, which reads as relevant
-  // without narrating the tracking mechanism. Uses a different product
-  // than Trigger 1 (Slim Fit Polo Shirt) so the two examples are
-  // visibly distinct products.
-  // ================================================================
-  var STALENESS_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 1; })[0]; // Slim Fit Polo Shirt
+  // shopper's ongoing search instead and the specific saved item, which
+  // reads as relevant without narrating the tracking mechanism. Uses a
+  // different product than Trigger 1 (Nautica Chinos) so the two
+  // examples are visibly distinct products.
+  //
+  // 2026-09-01: was Slim Fit Polo Shirt (id 1) — swapped out because
+  // that product is itself ~42% below its own average (Verified Low
+  // Price zone), so tapping through to its detail page showed a savings
+  // card despite this trigger's WhatsApp message carrying no price
+  // signal at all — misleading, since the reminder isn't about price.
+  // KALLOS Lipsticks (id 4) sits almost exactly at its own average
+  // (current ₹7,502 vs average ₹7,424, ~1% off — "Typical Price" zone),
+  // which is consistent with a non-price-based trigger. Real data, not
+  // picked to hit an exact match — no product in PRODUCT_DATA has
+  // current === average precisely.
+  var STALENESS_PRODUCT = PRODUCTS.filter(function (p) { return p.id === 4; })[0]; // KALLOS Lipsticks
 
   function renderWhatsAppStaleness(product) {
     waBubbleGreeting2.textContent = 'Hi ' + DEMO_USER_NAME + ',';
@@ -536,16 +591,37 @@
     switchScreen(screenWhatsapp2, screenWhatsapp, true);
   });
 
-  // WhatsApp Trigger 1 screen → Home (the manual-navigation fallback path;
-  // Home stays reachable but is no longer the primary entry point)
+  // WhatsApp Trigger 1 screen → the chat list (2026-09-01, changed from
+  // going straight to the Myntra home screen — that's not how WhatsApp's
+  // own back button behaves; it returns to the chat list, not to some
+  // other app).
   btnWaBack.addEventListener('click', function () {
-    switchScreen(screenWhatsapp, screenHome, false);
+    switchScreen(screenWhatsapp, screenWhatsappChats, false);
   });
 
   // WhatsApp Trigger 2 screen → back to Trigger 1 (its only entry point
   // is from Trigger 1's purpose-bar link, so back returns there)
   btnWaBack2.addEventListener('click', function () {
     switchScreen(screenWhatsapp2, screenWhatsapp, true);
+  });
+
+  // Chat list → either chat (2026-09-01)
+  chatRowMyntra.addEventListener('click', function () {
+    switchScreen(screenWhatsappChats, screenWhatsapp, true);
+  });
+  chatRowNextleap.addEventListener('click', function () {
+    switchScreen(screenWhatsappChats, screenNextleap, false);
+  });
+  btnNextleapBack.addEventListener('click', function () {
+    switchScreen(screenNextleap, screenWhatsappChats, true);
+  });
+
+  // Chat list → Home (2026-09-01) — Home used to be reachable directly
+  // from the Trigger 1 back-button; now that the back-button goes to the
+  // chat list instead, this subtle link is what keeps the Home/Wishlist/
+  // Product-detail manual-navigation path reachable at all.
+  linkOpenMyntraApp.addEventListener('click', function () {
+    switchScreen(screenWhatsappChats, screenHome, false);
   });
 
   // Home → Wishlist

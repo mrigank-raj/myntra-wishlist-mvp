@@ -21,7 +21,7 @@
        naming which trigger this screen demonstrates. -->
   <div id="screen-whatsapp" class="screen active wa-screen">
     <header class="wa-header">
-      <button class="back-btn wa-back-btn" id="btn-wa-back" aria-label="Open Myntra">
+      <button class="back-btn wa-back-btn" id="btn-wa-back" aria-label="Back to chats">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <div class="wa-contact">
@@ -137,12 +137,95 @@
             </div>
           </div>
           <p class="wa-bubble-greeting" id="wa-bubble-greeting-2">Hi there,</p>
-          <p class="wa-bubble-text">Still hunting for the right shirt? This one's already waiting in your wishlist.</p>
+          <p class="wa-bubble-text">Still deciding on the perfect shade? This one's already waiting in your wishlist.</p>
           <p class="wa-bubble-unsub">Reply STOP to unsubscribe</p>
           <div class="wa-bubble-cta">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1FA04B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Take Another Look
           </div>
+          <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wa-input-bar">
+      <div class="wa-input-fake">Message</div>
+      <div class="wa-mic-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== SCREEN 1C: WHATSAPP CHAT LIST ======================== -->
+  <!-- 2026-09-01, added: the header back-button on the Trigger 1/2 screens
+       used to go straight to the Myntra home screen, which doesn't match
+       how WhatsApp actually works (the back arrow on a chat returns to
+       the chat LIST, not to some other app). This is that chat list —
+       just the two chats this prototype has: Myntra (the real flow) and
+       a NextLeap easter egg (see screen-nextleap below). Not the app's
+       boot screen — screen-whatsapp (Trigger 1) still is, unchanged. -->
+  <div id="screen-whatsapp-chats" class="screen wa-chats-screen">
+    <header class="wa-chats-header">
+      <span class="wa-chats-title">WhatsApp</span>
+      <div class="wa-header-icons">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" opacity="0.85"><circle cx="12" cy="5" r="1.4" fill="#fff" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="#fff" stroke="none"/><circle cx="12" cy="19" r="1.4" fill="#fff" stroke="none"/></svg>
+      </div>
+    </header>
+
+    <div class="wa-chats-list">
+      <div class="wa-chat-row" id="chat-row-myntra" tabindex="0" role="button" aria-label="Open Myntra chat">
+        <div class="wa-avatar wa-chat-row-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="wa-chat-row-info">
+          <div class="wa-chat-row-top">
+            <span class="wa-chat-row-name">Myntra</span>
+            <span class="wa-chat-row-time">Now</span>
+          </div>
+          <div class="wa-chat-row-preview">Good news! This item from your wishlist just got a price drop.</div>
+        </div>
+      </div>
+      <div class="wa-chat-row" id="chat-row-nextleap" tabindex="0" role="button" aria-label="Open NextLeap chat">
+        <div class="wa-avatar wa-chat-row-avatar wa-chat-row-avatar-nextleap">NL</div>
+        <div class="wa-chat-row-info">
+          <div class="wa-chat-row-top">
+            <span class="wa-chat-row-name">NextLeap</span>
+            <span class="wa-chat-row-time">Now</span>
+          </div>
+          <div class="wa-chat-row-preview">Congratulations, you are a Top Fellow! 🎉</div>
+        </div>
+        <span class="wa-chat-row-unread">1</span>
+      </div>
+    </div>
+
+    <!-- Keeps the Home/Wishlist/Product-detail manual-navigation path
+         reachable — it used to be reachable via the header back-button,
+         which now goes here instead. Deliberately subtle/secondary so it
+         doesn't compete with the two chats above. -->
+    <button class="wa-chats-open-app-link" id="link-open-myntra-app">Open Myntra App &rarr;</button>
+  </div>
+
+  <!-- ======================== SCREEN 1D: NEXTLEAP EASTER EGG ======================== -->
+  <div id="screen-nextleap" class="screen wa-screen">
+    <header class="wa-header">
+      <button class="back-btn wa-back-btn" id="btn-nextleap-back" aria-label="Back to chats">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <div class="wa-contact">
+        <div class="wa-avatar wa-chat-row-avatar-nextleap">NL</div>
+        <div class="wa-contact-info">
+          <span class="wa-contact-name">NextLeap</span>
+          <span class="wa-contact-sub">online</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="wa-chat-body">
+      <div class="wa-date-chip"><span>Today</span></div>
+      <div class="wa-message-wrapper" style="cursor: default;">
+        <div class="wa-bubble wa-bubble-plain">
+          <p class="wa-bubble-text">Congratulations, you are a Top Fellow! 🎉</p>
           <span class="wa-bubble-time">9:41 AM <svg width="14" height="10" viewBox="0 0 16 11" fill="none"><path d="M1 5.5L4.5 9L11 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5L9 9L15.5 1.5" stroke="#53BDEB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
       </div>

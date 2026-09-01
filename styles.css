@@ -585,22 +585,155 @@ body {
   border-radius: 20px;
   flex-shrink: 0;
 }
+/* 2026-09-01: was a plain gray text link, only turning pink on :hover —
+   which does nothing on a touch device, so on a phone it was easy to miss
+   entirely. Now a solid pill button, same visual weight as the badge next
+   to it, visible without needing a hover state. */
 .wa-purpose-link {
+  border: none;
+  background: var(--myntra-pink);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(255,63,108,0.35);
+  transition: background 0.15s, transform 0.15s;
+}
+.wa-purpose-link:hover,
+.wa-purpose-link:focus-visible {
+  background: #E62958;
+  transform: translateY(-1px);
+}
+.wa-purpose-link:active {
+  transform: translateY(0);
+}
+
+/* ------------------------------------------------------------
+   WHATSAPP CHAT LIST (2026-09-01) — reached from either chat's
+   header back-button. Plain white list, not the wallpapered
+   .wa-screen background — matches how WhatsApp's own chat list
+   looks distinct from a chat's transcript.
+   ------------------------------------------------------------ */
+.wa-chats-screen {
+  background: var(--myntra-white);
+}
+.wa-chats-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #075E54;
+  color: #fff;
+}
+.wa-chats-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.wa-chats-list {
+  display: flex;
+  flex-direction: column;
+}
+.wa-chat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--myntra-border);
+  transition: background 0.15s;
+}
+.wa-chat-row:hover,
+.wa-chat-row:focus-visible {
+  background: #F7F7F9;
+}
+.wa-chat-row-avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+.wa-chat-row-avatar-nextleap {
+  background: var(--myntra-dark);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.wa-chat-row-info {
+  flex: 1;
+  min-width: 0;
+}
+.wa-chat-row-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.wa-chat-row-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--myntra-dark);
+}
+.wa-chat-row-time {
+  font-size: 0.66rem;
+  color: var(--myntra-gray);
+  flex-shrink: 0;
+}
+.wa-chat-row-preview {
+  font-size: 0.78rem;
+  color: var(--myntra-gray);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wa-chat-row-unread {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #25D366;
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+.wa-chats-open-app-link {
+  display: block;
+  width: 100%;
   border: none;
   background: none;
   color: var(--myntra-gray);
   font-family: inherit;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  padding: 4px 2px;
+  text-align: center;
+  padding: 16px;
   cursor: pointer;
-  text-align: right;
   transition: color 0.15s;
 }
-.wa-purpose-link:hover,
-.wa-purpose-link:focus-visible {
+.wa-chats-open-app-link:hover,
+.wa-chats-open-app-link:focus-visible {
   color: var(--myntra-pink);
+}
+
+/* NextLeap easter-egg chat — reuses .wa-bubble but standalone (no
+   product row, no CTA) since it's just the one message. */
+.wa-bubble-plain {
+  padding: 10px 12px 8px;
 }
 
 .wa-chat-body {
@@ -1216,11 +1349,17 @@ body {
   --verdict-bg: #F7F7F9;
   --verdict-accent: #6E7180;
 }
-.verdict-card.zone-caution {
-  --verdict-border: #FFDCA8;
-  --verdict-bg: #FFF8EC;
-  --verdict-accent: #C4650A;
+/* zone-typical (2026-09-01) — "Typical Price" (0-15% above average).
+   Positive/reassuring green, deliberately a different hue from the pink
+   savings zones above so it doesn't read as an actual discount. */
+.verdict-card.zone-typical {
+  --verdict-border: #BFE6D4;
+  --verdict-bg: #F2FBF7;
+  --verdict-accent: #1B8A5A;
 }
+/* zone-caution (amber "Above Average Price" warning) removed 2026-09-01 —
+   that zone now reuses zone-neutral's styling above. See app.js
+   VERDICT LOGIC comment for why. */
 
 /* Same card, compacted to fit inside the WhatsApp bubble (2026-09-01,
    per user sketch) — sizing only, colors/copy come from the same

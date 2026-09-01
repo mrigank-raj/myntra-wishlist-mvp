@@ -140,6 +140,15 @@ rounds before landing here:
   of the message's typography (the rest of the message doesn't use Title
   Case).
 
+**"See Trigger 2" link made a solid pill button (2026-09-01):** was a
+plain gray text link that only turned pink on `:hover` — which does
+nothing on a touch device, so on a phone (this whole prototype's actual
+context) it was easy to miss entirely, defeating its purpose of letting
+an evaluator find Trigger 2 in one look. Now a solid pink pill, same
+visual weight as the "Price Drop" badge next to it, visible without a
+hover state. Copy/behavior unchanged. Same fix applied to its mirror,
+"See Trigger 1" on the Trigger 2 screen.
+
 **CTA copy (2026-09-01):** "View Item" → "View This Deal" — ties the button
 to the price-drop hook already shown in the message rather than being a
 generic navigation label. Considered and explicitly rejected for CTR:
@@ -217,6 +226,19 @@ concept, real product.
    message, reached only via the Trigger 1 screen's purpose-bar link (or
    back from it). Tapping the message → same product-detail click-through
    as Trigger 1, for the Trigger 2 example product.
+1c. **WhatsApp chat list** (`#screen-whatsapp-chats`, 2026-09-01, added)
+   — reached via either trigger screen's header back-button, which
+   previously went straight to the Myntra home screen. Two chats: Myntra
+   (taps back into Trigger 1) and a NextLeap easter egg (taps into
+   `#screen-nextleap`, a single static message: "Congratulations, you are
+   a Top Fellow! 🎉" — not tied to any real data, purely a personal nod,
+   same demo-persona-placeholder logic as DEMO_USER_NAME). This screen is
+   NOT the app's boot screen — `#screen-whatsapp` (Trigger 1) still is,
+   unchanged; this is only reachable by navigating back from a trigger.
+   A small "Open Myntra App →" link at the bottom keeps the Home/
+   Wishlist/Product-detail manual-navigation path reachable — it used to
+   be reachable directly from the back-button, which now goes here
+   instead.
 2. **Myntra home screen** (static from V1, mostly decorative in this
    prototype — category tiles, brand cards, banners, bottom-nav tabs
    aren't wired to anything) — still reachable via normal
@@ -369,6 +391,53 @@ project owner, not a design-review fix):
   This sits in tension with the project's core thesis (the segment exists
   because Myntra's own price signal is opaque/unverifiable).
 
+**"Above Average Price" zone softened, not removed (2026-09-01).** Raised
+by the user: this card had no offsetting element (unlike below-average
+items, which get a struck-through markup price) and sat right above
+Add to Cart looking like a warning — could plausibly hurt the wishlist→
+purchase-in-30-days metric on that item. Two alternatives were discussed
+and rejected:
+- **Remove the card entirely for this zone.** Rejected — this would make
+  disclosure conditional on the verdict being favorable (shown for
+  below-average items, silently absent for above-average ones), which
+  conflicts with the project's core honest-price thesis and isn't a rare
+  edge case — this exact zone fires on the Overcoat, the first card in
+  the wishlist grid.
+- **Reframe as a fabricated "slightly higher demand" justification.**
+  Rejected — no demand/sales-velocity field exists anywhere in
+  PRODUCT_DATA; this would be invented data, same category already
+  rejected once for the WhatsApp CTA (fake urgency/fake social proof).
+- **Decision taken:** keep the disclosure, downgrade the alarm. The zone
+  now reuses the same neutral gray/info-icon treatment as "Typical
+  Price" instead of its own amber/up-arrow "caution" styling — the
+  `zone-caution` CSS class and the icon are removed as dead code, the
+  copy is unchanged (it was already factual, not alarmist — only the
+  color/icon read as a warning). Add to Cart/Buy Now stay live and
+  unblocked either way. Explicitly accepted trade-off, not solved away:
+  an honestly-priced-above-average item may still convert less than a
+  fabricated "everything's fine" framing would — that's the real cost of
+  disclosure on that one item, and the call here was to keep the
+  disclosure rather than optimize around it.
+- **"Typical Price" given a positive treatment (2026-09-01).** Was
+  sharing the same gray/info-icon "neutral" styling as Above Average
+  Price (see above). Changed to green/checkmark — a price at or up to
+  15% above average isn't a warning, it's a confirmed fair price, and
+  reads better with a reassuring tone. Deliberately a different green
+  hue from the pink savings zones (`zone-green`/`zone-fair`) so it
+  doesn't overstate as an actual discount — copy is unchanged, still
+  "typical average", never "you save". New `zone-typical` CSS class;
+  `zone-neutral` (gray) now belongs to Above Average Price alone.
+- **Caption removed for this zone only (2026-09-01).** The card's
+  caption line ("Usually sells for ₹X") was dropped for the Above
+  Average zone specifically, at the user's request — the same average
+  is already stated once in the card's main text ("₹X above its typical
+  average of ₹Y"), so the caption was a pure repeat on this one card.
+  Every other zone still shows the caption (there it's not a repeat —
+  those zones' text states a savings amount, not the average itself).
+  `computeVerdict()` now returns an empty `caption` for this zone, and
+  `paintVerdictCard()` hides the caption element (`hidden = true`)
+  rather than painting blank text into it.
+
 ## Visual style
 - Myntra pink/magenta (#FF3F6C or close) as primary accent
 - Clean white cards, rounded corners, standard e-commerce card layout
@@ -407,5 +476,14 @@ project owner, not a design-review fix):
 - **Trigger 1 (price drop) example:** Nautica Linen Cotton Slim Fit Chinos —
   Current (2600) = Lowest, genuinely below Average (5062) — a real, dramatic,
   honestly-sourced drop to show
-- **Trigger 2 (staleness) example:** any other product, e.g. Slim Fit Polo
-  Shirt — no price data needed for this message type
+- **Trigger 2 (reminder) example:** KALLOS VANITY Set of 8 Lip Liquid
+  Lipsticks (id 4) — current ₹7,502 vs average ₹7,424, ~1% off, the
+  closest thing to current = average in this dataset (no product has
+  it exactly). **2026-09-01, changed from Slim Fit Polo Shirt** — the
+  Polo Shirt is itself ~42% below its own average (Verified Low Price
+  zone), so tapping through Trigger 2's message landed on a savings
+  card despite the message carrying no price signal at all — misleading,
+  since this trigger isn't about price. Swapped to KALLOS instead of
+  inventing a new product with contrived stats. The bubble copy
+  ("Still deciding on the perfect shade?") was updated to match — it
+  previously said "the right shirt", specific to the old product.
