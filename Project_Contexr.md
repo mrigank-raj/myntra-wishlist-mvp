@@ -28,11 +28,12 @@ Fires when a wishlisted item's price has genuinely dropped. Message shows:
 history — only aggregate Current/Lowest/Average/Highest per product. Do NOT
 invent a specific "yesterday's price." Instead:
 - **"New price" = the product's real `Current` value**
-- **"Old"/markup price (struck through) = `Math.round((Average + Highest) / 2)`**
-  — revised 2026-09-01, see "Markup price is decorative" below. Both
-  `Average` and `Highest` are real PRODUCT_DATA fields; this is arithmetic
-  on two real values, not an invented number, and by construction it's
-  always ≥ Average for every product in the catalog.
+- **"Old"/markup price (struck through) = `Math.round((Average + Highest) / 2)`,
+  falling back to the real `Highest` value if that midpoint isn't above
+  `Current`** — revised 2026-09-01 (twice), see "Markup price is decorative"
+  and "Markup price shown on every page" below. All inputs (`Average`,
+  `Highest`, `Current`) are real PRODUCT_DATA fields; this is arithmetic on
+  real values, not an invented number.
 - **"Usually sells for ₹X" (verdict card caption) = the product's real
   `Average` value** — this, not the struck-through markup price, is the
   actual comparison baseline.
@@ -55,6 +56,30 @@ still matching each other exactly. This is the same honest logic already
 used in the existing verdict-card copy ("you'd save ₹X compared to what
 this usually sells for") — just delivered proactively instead of
 passively.
+
+**Markup price shown on every product page (2026-09-01):** was previously
+hidden on the product detail screen unless `Current` was below `Average`
+(so it only ever appeared alongside a real discount). Per the user's
+explicit instruction, it now shows on every product page, with two
+guardrails surfaced and confirmed during the change:
+1. **KALLOS Lipsticks bug:** the midpoint formula alone gives ₹7,464 for
+   this product, which is *below* its current price of ₹7,502 — would
+   have rendered a strikethrough price lower than the real price (reads
+   as a price increase, not a discount). Fixed per the user's rule:
+   `markupPrice()` now falls back to the item's real `Highest` (₹7,504)
+   whenever the midpoint isn't above `Current`. Still a real PRODUCT_DATA
+   field, still guaranteed above `Current` for every product in this
+   catalog.
+2. **Overcoat contradiction, explicitly hidden:** even with the fallback
+   fixed, the Above Average Price zone (Overcoat is the only product in
+   it) has current price ₹2,495 against a markup price of ₹3,414 — showing
+   that strikethrough would imply a ₹919 discount directly next to a
+   verdict card stating the item is priced *above* its own average,
+   contradicting itself on the same screen. Flagged to the user before
+   implementing; the user's call was to hide the markup price for this
+   zone only. `renderProductDetail()` now checks `verdict.zoneClass ===
+   'zone-neutral'` and hides `detail-price-was` there — the only zone
+   where it's hidden as of this change.
 
 **Message format (2026-09-01):** restructured to match a real competitor
 example (a Nykaa WhatsApp price-drop message the user has screenshot
@@ -173,9 +198,11 @@ it doesn't fall into the same category as the rejected fake-urgency copy.
   the user that this is most of the savings-zone catalog, not a rare
   case, and they kept the number anyway.
 - No sticker anymore — the "Steal Deal" sticker is back to its original,
-  unconditional strongest-zone-only behavior. The urgency is one
-  appended clause on the verdict card's "You save ₹X on this item."
-  line: **"It's rarely been priced this low."** — the user's own wording
+  unconditional strongest-zone-only behavior (text later renamed to
+  "Crazy Deal!" on the Product Detail screen only — see the 2026-09-01
+  note below). The urgency is one appended clause on the verdict card's
+  "You save ₹X on this item." line: **"It's rarely been priced this
+  low."** — the user's own wording
   ("You save ₹X on this item. One of the lowest price it has ever
   been."), reframed into 5 grammar-fixed variants, this one chosen.
 
@@ -562,3 +589,37 @@ and rejected:
   not a deletion. Note: this does mean the "Above Average Price" zone
   (Overcoat) is no longer the first card an evaluator sees — it's still
   present, just at the end of the grid.
+
+- **Markup ("was") price shown on every product page (2026-09-01):**
+  previously hidden unless current was below average. Two guardrails
+  confirmed with the user before shipping: (1) `markupPrice()` now falls
+  back to the item's real `Highest` value whenever the midpoint formula
+  isn't above `Current` — fixes KALLOS Lipsticks, where the plain
+  midpoint (₹7,464) was actually below its current price (₹7,502), which
+  would have rendered a strikethrough price lower than the real price;
+  (2) still explicitly hidden for the Above Average Price zone (Overcoat)
+  — showing it there would imply a discount right next to a verdict card
+  stating the item is priced above its own average, contradicting itself
+  on the same screen.
+
+- **"Steal Deal" → "Crazy Deal!" for zone-green, wishlist grid badge made
+  zone-aware (2026-09-01):** on the user's explicit, scoped instruction
+  (label/copy change only, no threshold or logic change). Changed:
+  the Product Detail sticker text (`detail-steal-sticker`, still gated to
+  zone-green only, same as before); the wishlist grid badge, which used
+  to be one generic "Price Drop!" label for any current-below-average
+  card and is now zone-aware — "Crazy Deal!" for zone-green, "Price
+  Drop!" unchanged for zone-fair, no badge for zone-typical/neutral
+  (same union condition as before, `pctDiff < 0`, just split by zone for
+  the label). The "Verified Low Price" verdict-card heading itself is
+  untouched, per the user's explicit instruction. **Not changed, flagged
+  instead:** the WhatsApp Trigger 1 bubble's own sticker
+  (`wa-steal-sticker`) still reads "Steal Deal" — it wasn't named in the
+  user's scoped instruction, so it was deliberately left alone rather
+  than assumed. This surfaced a real wording inconsistency (WhatsApp
+  message vs. Product Detail page, same zone-green product). First
+  confirmed with the user as intentional ("leave WhatsApp as Steal
+  Deal"), then reversed the same session — user asked for "Crazy Deal!"
+  on the WhatsApp sticker too. All three surfaces (WhatsApp Trigger 1
+  bubble, wishlist grid badge, Product Detail sticker) now consistently
+  read "Crazy Deal!" for zone-green.

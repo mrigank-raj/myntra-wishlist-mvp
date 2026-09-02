@@ -191,16 +191,25 @@
   // Struck-through "markup" price — 2026-09-01, per the user's explicit
   // instruction: this is a decorative "was" anchor only, not the number
   // the savings claim is computed against. It's the midpoint of average
-  // and highest (both real PRODUCT_DATA fields — no invented number),
-  // which is why it's always >= average for every product in the
-  // catalog. The real comparison baseline stays "average" everywhere
-  // else: the verdict card's "Usually sells for ₹X" caption and the
-  // "You are saving ₹X" text are both still computed off product.average vs.
-  // product.current, completely independent of this value. The two
-  // numbers are deliberately allowed to disagree — this one is for
-  // show, that one is the honest claim.
+  // and highest (both real PRODUCT_DATA fields — no invented number).
+  // The real comparison baseline stays "average" everywhere else: the
+  // verdict card's "Usually sells for ₹X" caption and "You are saving
+  // ₹X" text are both still computed off product.average vs.
+  // product.current, completely independent of this value.
+  //
+  // 2026-09-01: now shown on every product page (was previously hidden
+  // for at/above-average items). The midpoint formula is only guaranteed
+  // >= average, not necessarily > current — for one product (KALLOS,
+  // current ₹7,502 vs. midpoint ₹7,464) current is actually higher than
+  // the midpoint, which would render a "was" price lower than the real
+  // price (looks like a price increase, not a discount). Per the user's
+  // explicit rule: if the midpoint isn't above current, fall back to the
+  // item's real highest recorded price instead — still a real
+  // PRODUCT_DATA field, and guaranteed >= current for every product in
+  // this catalog.
   function markupPrice(product) {
-    return Math.round((product.average + product.highest) / 2);
+    var midpoint = Math.round((product.average + product.highest) / 2);
+    return midpoint > product.current ? midpoint : product.highest;
   }
 
   function escapeHtml(str) {
@@ -425,11 +434,14 @@
 
     // 2026-09-01: was a "Usually sells for ₹X" note here — that text now
     // lives in the verdict card's caption instead (see paintVerdictCard),
-    // so this spot carries a "Steal Deal" sticker instead. Reserved for
-    // the strongest zone only (Verified Low Price, >15% below average) —
-    // calling a merely-below-average price a "steal" would overstate the
-    // milder Price Drop zone, so the sticker only shows where the claim
-    // actually holds. (2026-09-01: briefly had a color/label-swapped
+    // so this spot carries a "Crazy Deal!" sticker instead (renamed from
+    // "Steal Deal" same day, matching the Product Detail sticker and the
+    // wishlist grid badge — see the "Steal Deal" → "Crazy Deal!" note
+    // below). Reserved for the strongest zone only (Verified Low Price,
+    // >15% below average) — calling a merely-below-average price a
+    // "steal" would overstate the milder Price Drop zone, so the sticker
+    // only shows where the claim actually holds. (2026-09-01: briefly
+    // had a color/label-swapped
     // "All-Time Low" variant here — the user wanted the urgency carried
     // in the verdict card's text instead, not a second sticker, see
     // computeVerdict()'s `nearLowest`.)
@@ -507,21 +519,30 @@
     detailName.textContent = product.name;
     detailPrice.textContent = formatPrice(product.current);
 
-    // "Was" (markup) price only when current is genuinely below average —
-    // showing a strikethrough otherwise would imply a discount that
-    // isn't real. See markupPrice() for what this value is and isn't.
-    if (verdict.pctDiff < 0) {
+    // "Was" (markup) price — shown on every product page as of 2026-09-01,
+    // except the Above Average Price zone. Showing it there would imply a
+    // discount (was ₹3,414, now ₹2,495 on the Overcoat) directly next to a
+    // verdict card that says the item is priced above its own average —
+    // the two would contradict each other on the same screen. Confirmed
+    // with the user; explicitly hidden for zone-neutral only. See
+    // markupPrice() for the fallback that keeps this number above current
+    // for every other product (including KALLOS).
+    if (verdict.zoneClass === 'zone-neutral') {
+      detailPriceWas.hidden = true;
+    } else {
       detailPriceWas.textContent = formatPrice(markupPrice(product));
       detailPriceWas.hidden = false;
-    } else {
-      detailPriceWas.hidden = true;
     }
 
     // 2026-09-01: this spot used to carry a "Usually sells for ₹X" note
     // (that text now lives in the verdict card's caption below instead).
-    // Now shows a "Steal Deal" sticker, reserved for the strongest zone
-    // only (Verified Low Price) — same reasoning as the WhatsApp message,
-    // see renderWhatsAppPriceDrop.
+    // Shows a sticker reserved for the strongest zone only (Verified Low
+    // Price) — text changed same day from "Steal Deal" to "Crazy Deal!"
+    // (see index.html), matching the wishlist grid badge and the
+    // WhatsApp Trigger 1 bubble's own sticker (renderWhatsAppPriceDrop) —
+    // initially left as "Steal Deal" there and flagged as an
+    // inconsistency, then the user asked for it renamed too, so all
+    // three surfaces now agree on "Crazy Deal!" for zone-green.
     detailStealSticker.hidden = verdict.zoneClass !== 'zone-green';
 
     // Price confidence card (replaces the old bar+marker verdict UI)
@@ -547,17 +568,21 @@
       card.className = 'product-card';
       card.setAttribute('data-product-id', product.id);
 
-      // 2026-09-01: "Price Drop!" badge on every card where current is
-      // genuinely below average — real arithmetic on real PRODUCT_DATA,
-      // same condition the verdict logic already uses (pctDiff < 0).
-      // Deliberately covers BOTH below-average zones here (unlike the
-      // WhatsApp/detail "Steal Deal" sticker, which is Verified-Low-Price
-      // only) — the user's own stated condition for this badge is just
-      // "current price is less than average price," so it's not scoped
-      // any tighter than that.
-      var priceDropBadge = product.current < product.average
-        ? '<div class="card-price-drop-badge">Price Drop!</div>'
-        : '';
+      // 2026-09-01: badge is now zone-aware (was one generic "Price Drop!"
+      // label for any current-below-average card). Same underlying
+      // condition as before (pctDiff < 0, i.e. zone-green or zone-fair) —
+      // only the label text changes per zone, no threshold change:
+      //   zone-green (>15% below average) → "Crazy Deal!" (was "Steal
+      //     Deal" sticker text on the detail page too, same zone)
+      //   zone-fair (0-15% below average) → "Price Drop!" (unchanged)
+      //   everything else → no badge (unchanged)
+      var cardVerdict = computeVerdict(product);
+      var priceDropBadge = '';
+      if (cardVerdict.zoneClass === 'zone-green') {
+        priceDropBadge = '<div class="card-price-drop-badge">Crazy Deal!</div>';
+      } else if (cardVerdict.zoneClass === 'zone-fair') {
+        priceDropBadge = '<div class="card-price-drop-badge">Price Drop!</div>';
+      }
 
       card.innerHTML =
         '<div class="product-card-image" style="--img-bg: ' + product.imgBg + ';">' +
